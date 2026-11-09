@@ -32,6 +32,8 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
+    "start": "node scripts/serve.mjs",
+    "build:serve": "npm run build && npm run start",
     "test": "vitest run",
     "test:watch": "vitest",
     "changeset": "changeset",

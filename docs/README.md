@@ -25,6 +25,7 @@ Welcome to the Inkfra documentation. Inkfra is a browser-based visual canvas tha
 | [Roadmap](./17-roadmap.md) | Planned enhancements |
 | [Terraform Quality Plan](./18-terraform-quality-plan.md) | Plan for industry-standard Terraform generation |
 | [Next Steps](./19-next-steps.md) | Roadmap and implementation plan |
+| [Desktop Release Plan](./20-desktop-release-plan.md) | Plan for Windows and Linux executables |
 
 ## Quick links
 
