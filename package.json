@@ -1,7 +1,7 @@
 {
   "name": "inkfra",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "Visual-to-IaC canvas that converts architecture diagrams into ready-to-use Terraform code.",
   "author": "Harekrishna Bagh",
