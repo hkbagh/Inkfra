@@ -1,0 +1,28 @@
+name: Desktop Build
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Build desktop
+        run: npx electron-builder --${{ matrix.os == 'windows-latest' && 'win' || 'linux' }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: inkfra-${{ matrix.os }}
+          path: release/**

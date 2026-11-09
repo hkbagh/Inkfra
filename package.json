@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.1.1",
   "type": "module",
+  "main": "electron/main.cjs",
   "description": "Visual-to-IaC canvas that converts architecture diagrams into ready-to-use Terraform code.",
   "author": "Harekrishna Bagh",
   "license": "MIT",
@@ -27,6 +28,30 @@
     "gcp",
     "react"
   ],
+  "build": {
+    "appId": "com.harekrishnabagh.inkfra",
+    "productName": "Inkfra",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Development"
+    }
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
@@ -34,6 +59,9 @@
     "preview": "vite preview",
     "start": "node scripts/serve.mjs",
     "build:serve": "npm run build && npm run start",
+    "electron:dev": "npm run dev & electron .",
+    "electron:build": "npm run build && electron-builder --win --linux",
+    "package:sea": "node scripts/package-sea.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "changeset": "changeset",
@@ -73,8 +101,11 @@
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
     "autoprefixer": "^10.6.2",
+    "electron": "^45.2.3",
+    "electron-builder": "^26.18.0",
     "husky": "^9.1.7",
     "oxlint": "^1.90.0",
+    "postject": "^1.0.0-alpha.6",
     "prettier": "^3.9.10",
     "typescript": "~7.0.2",
     "vite": "^8.3.6",
