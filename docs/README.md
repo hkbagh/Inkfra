@@ -23,6 +23,7 @@ Welcome to the Inkfra documentation. Inkfra is a browser-based visual canvas tha
 | [Security](./15-security.md) | Security considerations and data handling |
 | [Troubleshooting](./16-troubleshooting.md) | Common issues and fixes |
 | [Roadmap](./17-roadmap.md) | Planned enhancements |
+| [Terraform Quality Plan](./18-terraform-quality-plan.md) | Plan for industry-standard Terraform generation |
 
 ## Quick links
 

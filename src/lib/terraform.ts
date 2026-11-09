@@ -9,6 +9,7 @@ interface GenResult {
 
 const PROVIDER_BLOCKS: Record<string, string> = {
   aws: `terraform {
+  required_version = ">= 1.5.0"
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -22,6 +23,7 @@ provider "aws" {
 }
 `,
   azure: `terraform {
+  required_version = ">= 1.5.0"
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
@@ -35,6 +37,7 @@ provider "azurerm" {
 }
 `,
   gcp: `terraform {
+  required_version = ">= 1.5.0"
   required_providers {
     google = {
       source  = "hashicorp/google"
@@ -49,6 +52,7 @@ provider "google" {
 }
 `,
   multi: `terraform {
+  required_version = ">= 1.5.0"
   required_providers {
     aws = { source = "hashicorp/aws", version = "~> 5.0" }
     azurerm = { source = "hashicorp/azurerm", version = "~> 3.0" }
@@ -72,10 +76,10 @@ provider "google" {
 }
 
 function varsFor(provider: string): string {
-  if (provider === 'aws') return `variable "aws_region" {\n  type    = string\n  default = "us-east-1"\n}\n`
-  if (provider === 'azure') return `variable "azure_location" {\n  type    = string\n  default = "eastus"\n}\n`
-  if (provider === 'gcp') return `variable "gcp_project" {\n  type    = string\n  default = "my-project"\n}\nvariable "gcp_region" {\n  type    = string\n  default = "us-central1"\n}\n`
-  if (provider === 'multi') return `variable "aws_region" {\n  type    = string\n  default = "us-east-1"\n}\nvariable "azure_location" {\n  type    = string\n  default = "eastus"\n}\nvariable "gcp_project" {\n  type    = string\n  default = "my-project"\n}\nvariable "gcp_region" {\n  type    = string\n  default = "us-central1"\n}\n`
+  if (provider === 'aws') return `variable "aws_region" {\n  type    = string\n  default = "us-east-1"\n}\nvariable "environment" {\n  type    = string\n  default = "dev"\n}\n`
+  if (provider === 'azure') return `variable "azure_location" {\n  type    = string\n  default = "eastus"\n}\nvariable "environment" {\n  type    = string\n  default = "dev"\n}\n`
+  if (provider === 'gcp') return `variable "gcp_project" {\n  type    = string\n  default = "my-project"\n}\nvariable "gcp_region" {\n  type    = string\n  default = "us-central1"\n}\nvariable "environment" {\n  type    = string\n  default = "dev"\n}\n`
+  if (provider === 'multi') return `variable "aws_region" {\n  type    = string\n  default = "us-east-1"\n}\nvariable "azure_location" {\n  type    = string\n  default = "eastus"\n}\nvariable "gcp_project" {\n  type    = string\n  default = "my-project"\n}\nvariable "gcp_region" {\n  type    = string\n  default = "us-central1"\n}\nvariable "environment" {\n  type    = string\n  default = "dev"\n}\n`
   return ''
 }
 
@@ -189,17 +193,17 @@ export function generateTerraform(project: Project): GenResult {
       'aws_kinesis_stream', 'aws_api_gateway_rest_api', 'aws_ssm_parameter',
       'aws_dynamodb_table', 'aws_route53_zone', 'aws_db_instance',
     ])
-    if (tfType.startsWith('aws_') && props.name) {
-      extra.push(`tags = { Name = ${hclValue(props.name)} }`)
-      if (!AWS_NAME_ARG.has(tfType)) delete props.name
+    if (tfType.startsWith('aws_')) {
+      if (props.name) {
+        extra.push(`tags = merge(local.common_tags, { Name = ${hclValue(props.name)} })`)
+        if (!AWS_NAME_ARG.has(tfType)) delete props.name
+      } else {
+        extra.push('tags = local.common_tags')
+      }
     }
     const dset = deps.get(n.id)
     if (dset && dset.size) {
       extra.push(`depends_on = [${Array.from(dset).join(', ')}]`)
-    }
-    // tags
-    if (!props.tags && (tfType.startsWith('aws_') || tfType.startsWith('azurerm_') || tfType.startsWith('google_'))) {
-      // skip
     }
     blocks.push(hclBlock(tfType, name, props, extra))
   }
@@ -218,7 +222,8 @@ export function generateTerraform(project: Project): GenResult {
     blocks.push('')
   }
 
-  const mainTf = [providerBlock, '', ...blocks].join('\n')
+  const localsBlock = `locals {\n  common_tags = {\n    Project     = ${hclValue(project.name)}\n    Environment = var.environment\n    ManagedBy   = "Inkfra"\n  }\n}\n`
+  const mainTf = [providerBlock, '', localsBlock, '', ...blocks].join('\n')
 
   const variablesTf = varsFor(provider)
 

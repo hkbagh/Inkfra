@@ -18,3 +18,14 @@ jobs:
       - run: npm run lint
       - run: npm run build
       - run: npm run test
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.0
+      - name: Terraform fmt check (example)
+        working-directory: examples/aws-basic
+        run: terraform fmt -check -recursive
+      - name: Terraform validate (example)
+        working-directory: examples/aws-basic
+        run: |
+          terraform init -backend=false
+          terraform validate
