@@ -10,8 +10,8 @@ function ResourceNode({ data, selected }: NodeProps & { data: NodeData }) {
   const color = def?.color ?? '#64748b'
   return (
     <div
-      className={`min-w-[170px] rounded-xl border bg-slate-900/90 shadow-lg transition ${
-        selected ? 'border-white/60 ring-2 ring-white/20' : 'border-white/10'
+      className={`min-w-[180px] rounded-xl border bg-slate-900/95 shadow-xl transition-all duration-150 ${
+        selected ? 'border-blue-400/70 ring-2 ring-blue-400/20 scale-[1.01]' : 'border-white/10 hover:border-white/20'
       }`}
       style={{ borderColor: selected ? color : undefined }}
     >

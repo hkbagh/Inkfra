@@ -193,6 +193,14 @@ export function generateTerraform(project: Project): GenResult {
       'aws_kinesis_stream', 'aws_api_gateway_rest_api', 'aws_ssm_parameter',
       'aws_dynamodb_table', 'aws_route53_zone', 'aws_db_instance',
     ])
+    if (tfType === 'aws_db_instance' && props.name) {
+      props.db_name = props.name
+      delete props.name
+    }
+    if (tfType === 'aws_s3_bucket' && props.versioning) {
+      extra.push('versioning {\n    enabled = true\n  }')
+      delete props.versioning
+    }
     if (tfType.startsWith('aws_')) {
       if (props.name) {
         extra.push(`tags = merge(local.common_tags, { Name = ${hclValue(props.name)} })`)

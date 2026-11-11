@@ -66,7 +66,7 @@ export default function Sidebar() {
               onDragStart={(e) => onDragStart(e, def)}
               onClick={() => addNode(def, { x: 120 + (nodeCount % 5) * 220, y: 120 + Math.floor(nodeCount / 5) * 140 })}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); addNode(def, { x: 120 + (nodeCount % 5) * 220, y: 120 + Math.floor(nodeCount / 5) * 140 }) } }}
-              className="flex items-center gap-2 px-2 py-2 rounded-md hover:bg-white/5 cursor-grab active:cursor-grabbing border border-transparent hover:border-white/10"
+              className="group flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-white/[0.06] cursor-grab active:cursor-grabbing border border-transparent hover:border-white/10 transition-all duration-150 hover:translate-y-[-1px] hover:shadow-md"
               title={def.description || 'Click or drag to add'}
             >
               <div className="p-1.5 rounded-md" style={{ background: `${def.color}22`, color: def.color }}>

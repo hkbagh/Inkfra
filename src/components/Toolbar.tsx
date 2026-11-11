@@ -118,20 +118,20 @@ export default function Toolbar() {
 
         <div className="flex-1" />
 
-        <button onClick={handleValidate} className="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 text-sm flex items-center gap-1.5">
+        <button onClick={handleValidate} className="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 active:scale-95 text-sm flex items-center gap-1.5 transition">
           <Lucide.CheckCircle2 size={14} /> Validate
         </button>
-        <button onClick={handleGenerate} className="px-3 py-1.5 rounded-md bg-blue-600 hover:bg-blue-500 text-sm flex items-center gap-1.5">
+        <button onClick={handleGenerate} className="px-3 py-1.5 rounded-md bg-blue-600 hover:bg-blue-500 active:scale-95 text-sm transition flex items-center gap-1.5">
           <Lucide.Download size={14} /> Generate .tf
         </button>
-        <button onClick={handleExportJson} className="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 text-sm flex items-center gap-1.5">
+        <button onClick={handleExportJson} className="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 active:scale-95 text-sm transition flex items-center gap-1.5">
           <Lucide.FileJson size={14} /> Export
         </button>
-        <button onClick={() => fileInputRef.current?.click()} className="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 text-sm flex items-center gap-1.5">
+        <button onClick={() => fileInputRef.current?.click()} className="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 active:scale-95 text-sm transition flex items-center gap-1.5">
           <Lucide.Upload size={14} /> Import
         </button>
         <input ref={fileInputRef} type="file" accept="application/json,.json" onChange={handleImportJson} className="hidden" />
-        <button onClick={handleClear} className="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 text-sm flex items-center gap-1.5">
+        <button onClick={handleClear} className="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 active:scale-95 text-sm transition flex items-center gap-1.5">
           <Lucide.Trash2 size={14} /> Clear
         </button>
       </div>

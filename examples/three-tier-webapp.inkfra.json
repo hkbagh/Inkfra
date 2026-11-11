@@ -1,0 +1,38 @@
+{
+  "name": "Three-Tier Web App",
+  "description": "A production-style three-tier architecture on AWS.",
+  "provider": "aws",
+  "nodes": [
+    { "id": "vpc", "type": "aws_vpc", "label": "Main VPC", "provider": "aws", "x": 80, "y": 80, "properties": { "cidr_block": "10.0.0.0/16", "name": "main-vpc" } },
+    { "id": "pub1", "type": "aws_subnet", "label": "Public Subnet A", "provider": "aws", "x": 320, "y": 80, "properties": { "cidr_block": "10.0.1.0/24", "availability_zone": "us-east-1a", "map_public_ip_on_launch": true, "name": "public-a" } },
+    { "id": "pub2", "type": "aws_subnet", "label": "Public Subnet B", "provider": "aws", "x": 320, "y": 220, "properties": { "cidr_block": "10.0.2.0/24", "availability_zone": "us-east-1b", "map_public_ip_on_launch": true, "name": "public-b" } },
+    { "id": "priv1", "type": "aws_subnet", "label": "Private Subnet A", "provider": "aws", "x": 560, "y": 80, "properties": { "cidr_block": "10.0.11.0/24", "availability_zone": "us-east-1a", "name": "private-a" } },
+    { "id": "priv2", "type": "aws_subnet", "label": "Private Subnet B", "provider": "aws", "x": 560, "y": 220, "properties": { "cidr_block": "10.0.12.0/24", "availability_zone": "us-east-1b", "name": "private-b" } },
+    { "id": "igw", "type": "aws_internet_gateway", "label": "Internet Gateway", "provider": "aws", "x": 80, "y": 260, "properties": { "name": "igw" } },
+    { "id": "alb", "type": "aws_lb", "label": "Application LB", "provider": "aws", "x": 800, "y": 120, "properties": { "load_balancer_type": "application", "internal": false, "name": "alb" } },
+    { "id": "web1", "type": "aws_ec2_instance", "label": "Web Server 1", "provider": "aws", "x": 800, "y": 300, "properties": { "instance_type": "t3.small", "ami": "ami-0c55b159cbfafe1f0", "name": "web-1" } },
+    { "id": "web2", "type": "aws_ec2_instance", "label": "Web Server 2", "provider": "aws", "x": 1040, "y": 300, "properties": { "instance_type": "t3.small", "ami": "ami-0c55b159cbfafe1f0", "name": "web-2" } },
+    { "id": "db", "type": "aws_rds_instance", "label": "PostgreSQL DB", "provider": "aws", "x": 800, "y": 480, "properties": { "engine": "postgres", "instance_class": "db.t3.small", "allocated_storage": 20, "username": "appuser", "password": "changeme", "name": "appdb" } },
+    { "id": "sg_web", "type": "aws_security_group", "label": "Web SG", "provider": "aws", "x": 1040, "y": 80, "properties": { "name": "web-sg", "description": "Allow HTTP/HTTPS" } },
+    { "id": "sg_db", "type": "aws_security_group", "label": "DB SG", "provider": "aws", "x": 1040, "y": 480, "properties": { "name": "db-sg", "description": "Allow Postgres from web" } },
+    { "id": "s3", "type": "aws_s3_bucket", "label": "Assets Bucket", "provider": "aws", "x": 80, "y": 480, "properties": { "bucket": "app-assets-bucket", "acl": "private", "versioning": true } }
+  ],
+  "edges": [
+    { "id": "e1", "source": "pub1", "target": "vpc", "kind": "contains" },
+    { "id": "e2", "source": "pub2", "target": "vpc", "kind": "contains" },
+    { "id": "e3", "source": "priv1", "target": "vpc", "kind": "contains" },
+    { "id": "e4", "source": "priv2", "target": "vpc", "kind": "contains" },
+    { "id": "e5", "source": "igw", "target": "vpc", "kind": "contains" },
+    { "id": "e6", "source": "alb", "target": "pub1", "kind": "connects" },
+    { "id": "e7", "source": "alb", "target": "pub2", "kind": "connects" },
+    { "id": "e8", "source": "web1", "target": "priv1", "kind": "contains" },
+    { "id": "e9", "source": "web2", "target": "priv2", "kind": "contains" },
+    { "id": "e10", "source": "web1", "target": "sg_web", "kind": "connects" },
+    { "id": "e11", "source": "web2", "target": "sg_web", "kind": "connects" },
+    { "id": "e12", "source": "db", "target": "priv1", "kind": "contains" },
+    { "id": "e13", "source": "db", "target": "sg_db", "kind": "connects" },
+    { "id": "e14", "source": "s3", "target": "vpc", "kind": "connects" }
+  ],
+  "createdAt": "2026-11-11T00:00:00.000Z",
+  "updatedAt": "2026-11-11T00:00:00.000Z"
+}
