@@ -16,6 +16,7 @@ This guide connects Inkfra to Cloudflare via the dashboard (no GitHub Actions re
    - Root directory: `/`
 5. Environment variables:
    - `VITE_BASE` = `/`
+   - `NODE_VERSION` = `24`
 6. Save and Deploy.
 
 Cloudflare will build and deploy on every push to `main`.
