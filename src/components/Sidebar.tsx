@@ -33,21 +33,21 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="w-72 shrink-0 border-r border-white/10 bg-slate-950/80 flex flex-col">
-      <div className="p-3 border-b border-white/10">
+    <aside className="w-72 shrink-0 border-r themed-border themed-surface flex flex-col">
+      <div className="p-3 border-b border-[var(--border)]">
         <div className="text-sm font-semibold mb-2">Resource Library</div>
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search resources..."
-          className="w-full px-3 py-2 rounded-md bg-slate-900 border border-white/10 text-sm outline-none focus:border-blue-500"
+          className="w-full px-3 py-2 rounded-md bg-[var(--surface-2)] border border-[var(--border)] text-sm outline-none focus:border-blue-500"
         />
         <div className="flex gap-2 mt-2">
-          <select value={provider} onChange={(e) => setProvider(e.target.value)} className="flex-1 px-2 py-1.5 rounded-md bg-slate-900 border border-white/10 text-xs">
+          <select value={provider} onChange={(e) => setProvider(e.target.value)} className="flex-1 px-2 py-1.5 rounded-md bg-[var(--surface-2)] border border-[var(--border)] text-xs">
             <option value="all">All providers</option>
             {PROVIDERS.map((p) => <option key={p} value={p}>{p}</option>)}
           </select>
-          <select value={category} onChange={(e) => setCategory(e.target.value)} className="flex-1 px-2 py-1.5 rounded-md bg-slate-900 border border-white/10 text-xs">
+          <select value={category} onChange={(e) => setCategory(e.target.value)} className="flex-1 px-2 py-1.5 rounded-md bg-[var(--surface-2)] border border-[var(--border)] text-xs">
             <option value="all">All categories</option>
             {categories.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
@@ -66,7 +66,7 @@ export default function Sidebar() {
               onDragStart={(e) => onDragStart(e, def)}
               onClick={() => addNode(def, { x: 120 + (nodeCount % 5) * 220, y: 120 + Math.floor(nodeCount / 5) * 140 })}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); addNode(def, { x: 120 + (nodeCount % 5) * 220, y: 120 + Math.floor(nodeCount / 5) * 140 }) } }}
-              className="group flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-white/[0.06] cursor-grab active:cursor-grabbing border border-transparent hover:border-white/10 transition-all duration-150 hover:translate-y-[-1px] hover:shadow-md"
+              className="group flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-white/[0.06] cursor-grab active:cursor-grabbing border border-transparent hover:border-[var(--border)] transition-all duration-150 hover:translate-y-[-1px] hover:shadow-md"
               title={def.description || 'Click or drag to add'}
             >
               <div className="p-1.5 rounded-md" style={{ background: `${def.color}22`, color: def.color }}>

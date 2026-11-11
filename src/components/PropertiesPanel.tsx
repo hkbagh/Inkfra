@@ -19,7 +19,7 @@ export default function PropertiesPanel() {
 
   if (!node && !edge) {
     return (
-      <aside className="w-80 shrink-0 border-l border-white/10 bg-slate-950/80 p-4 text-sm text-slate-400">
+      <aside className="w-80 shrink-0 border-l border-[var(--border)] bg-slate-950/80 p-4 text-sm text-slate-400">
         <div className="font-semibold text-slate-200 mb-2">Properties</div>
         Select a node or connection to edit its properties.
       </aside>
@@ -28,8 +28,8 @@ export default function PropertiesPanel() {
 
   if (edge) {
     return (
-      <aside className="w-80 shrink-0 border-l border-white/10 bg-slate-950/80 flex flex-col">
-        <div className="p-4 border-b border-white/10">
+      <aside className="w-80 shrink-0 border-l themed-border themed-surface flex flex-col">
+        <div className="p-4 border-b border-[var(--border)]">
           <div className="font-semibold text-slate-200">Connection</div>
           <div className="text-xs text-slate-500 mt-1">{edge.source} → {edge.target}</div>
         </div>
@@ -39,7 +39,7 @@ export default function PropertiesPanel() {
             <select
               value={(edge.data?.kind as string) ?? 'connects'}
               onChange={(e) => updateEdge(edge.id, { data: { kind: e.target.value }, label: e.target.value })}
-              className="mt-1 w-full px-3 py-2 rounded-md bg-slate-900 border border-white/10 text-sm"
+              className="mt-1 w-full px-3 py-2 rounded-md bg-[var(--surface-2)] border border-[var(--border)] text-sm"
             >
               {EDGE_KINDS.map((k) => <option key={k.value} value={k.value}>{k.label}</option>)}
             </select>
@@ -49,11 +49,11 @@ export default function PropertiesPanel() {
             <input
               value={(edge.label as string) ?? ''}
               onChange={(e) => updateEdge(edge.id, { label: e.target.value })}
-              className="mt-1 w-full px-3 py-2 rounded-md bg-slate-900 border border-white/10 text-sm"
+              className="mt-1 w-full px-3 py-2 rounded-md bg-[var(--surface-2)] border border-[var(--border)] text-sm"
             />
           </label>
         </div>
-        <div className="p-4 border-t border-white/10">
+        <div className="p-4 border-t border-[var(--border)]">
           <button onClick={() => deleteEdge(edge.id)} className="w-full px-3 py-2 rounded-md bg-red-600/20 text-red-300 hover:bg-red-600/30 text-sm">Delete Connection</button>
         </div>
       </aside>
@@ -63,8 +63,8 @@ export default function PropertiesPanel() {
   if (!node) return null
 
   return (
-    <aside className="w-80 shrink-0 border-l border-white/10 bg-slate-950/80 flex flex-col">
-      <div className="p-4 border-b border-white/10">
+    <aside className="w-80 shrink-0 border-l themed-border themed-surface flex flex-col">
+      <div className="p-4 border-b border-[var(--border)]">
         <div className="font-semibold text-slate-200">{def?.label ?? node.data.resourceType}</div>
         <div className="text-xs text-slate-500 mt-1">{node.data.resourceType}</div>
       </div>
@@ -74,12 +74,12 @@ export default function PropertiesPanel() {
           <input
             value={node.data.label}
             onChange={(e) => updateNode(node.id, { label: e.target.value })}
-            className="mt-1 w-full px-3 py-2 rounded-md bg-slate-900 border border-white/10 text-sm"
+            className="mt-1 w-full px-3 py-2 rounded-md bg-[var(--surface-2)] border border-[var(--border)] text-sm"
           />
         </label>
         {def?.properties.map((p: any) => {
           const val = node.data.properties?.[p.key]
-          const common = "mt-1 w-full px-3 py-2 rounded-md bg-slate-900 border border-white/10 text-sm"
+          const common = "mt-1 w-full px-3 py-2 rounded-md bg-[var(--surface-2)] border border-[var(--border)] text-sm"
           if (p.type === 'boolean') {
             return (
               <label key={p.key} className="flex items-center gap-2">
@@ -131,7 +131,7 @@ export default function PropertiesPanel() {
           )
         })}
       </div>
-      <div className="p-4 border-t border-white/10">
+      <div className="p-4 border-t border-[var(--border)]">
         <button onClick={() => deleteNode(node.id)} className="w-full px-3 py-2 rounded-md bg-red-600/20 text-red-300 hover:bg-red-600/30 text-sm">Delete Resource</button>
       </div>
     </aside>

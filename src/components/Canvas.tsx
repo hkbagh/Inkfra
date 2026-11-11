@@ -93,7 +93,7 @@ function CanvasInner() {
         defaultEdgeOptions={{ type: 'smoothstep' }}
         proOptions={{ hideAttribution: true }}
       >
-        <Background gap={16} color="#1e293b" />
+        <Background gap={16} color="var(--surface-2)" />
         <Controls className="!bg-slate-800 !border-white/10 !text-white" />
         <MiniMap className="!bg-slate-900" nodeColor={() => '#475569'} maskColor="rgba(0,0,0,0.6)" />
       </ReactFlow>

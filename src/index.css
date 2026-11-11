@@ -1,14 +1,37 @@
 @import "tailwindcss";
 
-:root {
-  color-scheme: dark;
+:root,
+[data-theme="professional"] {
+  --bg: #0b1220;
+  --surface: #111a2e;
+  --surface-2: #1e2a44;
+  --border: rgba(255, 255, 255, 0.08);
+  --text: #e6e9ef;
+  --text-muted: #94a3b8;
+  --accent: #3b82f6;
+  --accent-soft: rgba(59, 130, 246, 0.15);
+  --radius: 8px;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme="slack"] {
+  --bg: #1a1d21;
+  --surface: #222529;
+  --surface-2: #2c2f33;
+  --border: rgba(255, 255, 255, 0.06);
+  --text: #d1d2d3;
+  --text-muted: #ababad;
+  --accent: #4a154b;
+  --accent-soft: rgba(74, 21, 75, 0.25);
+  --radius: 10px;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
 }
 
 html, body, #root {
   height: 100%;
   margin: 0;
-  background: #0b0f17;
-  color: #e6e9ef;
+  background: var(--bg);
+  color: var(--text);
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -16,19 +39,19 @@ html, body, #root {
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #334155 #0b0f17;
+  scrollbar-color: var(--surface-2) var(--bg);
 }
 
 *:focus-visible {
-  outline: 2px solid #60a5fa;
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
-/* React Flow overrides */
-.react-flow__node {
-  border-radius: 10px;
-}
-.react-flow__handle {
-  width: 10px;
-  height: 10px;
-}
+/* Theme-aware utility shortcuts */
+.themed-bg { background: var(--bg); }
+.themed-surface { background: var(--surface); }
+.themed-border { border-color: var(--border); }
+.themed-text { color: var(--text); }
+.themed-muted { color: var(--text-muted); }
+.themed-accent { color: var(--accent); }
+.themed-radius { border-radius: var(--radius); }

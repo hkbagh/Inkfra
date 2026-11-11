@@ -5,6 +5,7 @@ import { validateProject } from '../lib/validate'
 import { parseProject } from '../lib/project'
 import { saveAs } from 'file-saver'
 import { iconMap as Lucide } from '../lib/iconMap'
+import { useTheme } from '../store/useTheme'
 
 export default function Toolbar() {
   const projectName = useStore((s) => s.projectName)
@@ -17,6 +18,8 @@ export default function Toolbar() {
   const loadProject = useStore((s) => s.loadProject)
   const toProject = useStore((s) => s.toProject)
   const nodes = useStore((s) => s.nodes)
+  const theme = useTheme((s) => s.theme)
+  const toggleTheme = useTheme((s) => s.toggle)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [issues, setIssues] = useState<ReturnType<typeof validateProject>>([])
@@ -85,7 +88,7 @@ export default function Toolbar() {
   }
 
   return (
-    <div className="border-b border-white/10 bg-slate-950/90">
+    <div className="border-b themed-border themed-surface">
       <div className="flex items-center gap-3 px-4 py-2">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
@@ -100,16 +103,16 @@ export default function Toolbar() {
         <input
           value={projectName}
           onChange={(e) => setProjectName(e.target.value)}
-          className="px-3 py-1.5 rounded-md bg-slate-900 border border-white/10 text-sm w-48"
+          className="px-3 py-1.5 rounded-md bg-[var(--surface-2)] border border-[var(--border)] text-sm w-48"
           placeholder="Project name"
         />
         <input
           value={projectDescription}
           onChange={(e) => setProjectDescription(e.target.value)}
-          className="px-3 py-1.5 rounded-md bg-slate-900 border border-white/10 text-sm w-64"
+          className="px-3 py-1.5 rounded-md bg-[var(--surface-2)] border border-[var(--border)] text-sm w-64"
           placeholder="Description"
         />
-        <select value={targetProvider} onChange={(e) => setTargetProvider(e.target.value as any)} className="px-2 py-1.5 rounded-md bg-slate-900 border border-white/10 text-sm">
+        <select value={targetProvider} onChange={(e) => setTargetProvider(e.target.value as any)} className="px-2 py-1.5 rounded-md bg-[var(--surface-2)] border border-[var(--border)] text-sm">
           <option value="aws">AWS</option>
           <option value="azure">Azure</option>
           <option value="gcp">GCP</option>
@@ -118,27 +121,30 @@ export default function Toolbar() {
 
         <div className="flex-1" />
 
-        <button onClick={handleValidate} className="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 active:scale-95 text-sm flex items-center gap-1.5 transition">
+        <button onClick={handleValidate} className="px-3 py-1.5 rounded-md bg-[var(--surface-2)] hover:bg-[var(--surface)] active:scale-95 text-sm flex items-center gap-1.5 transition">
           <Lucide.CheckCircle2 size={14} /> Validate
         </button>
         <button onClick={handleGenerate} className="px-3 py-1.5 rounded-md bg-blue-600 hover:bg-blue-500 active:scale-95 text-sm transition flex items-center gap-1.5">
           <Lucide.Download size={14} /> Generate .tf
         </button>
-        <button onClick={handleExportJson} className="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 active:scale-95 text-sm transition flex items-center gap-1.5">
+        <button onClick={handleExportJson} className="px-3 py-1.5 rounded-md bg-[var(--surface-2)] hover:bg-[var(--surface)] active:scale-95 text-sm transition flex items-center gap-1.5">
           <Lucide.FileJson size={14} /> Export
         </button>
-        <button onClick={() => fileInputRef.current?.click()} className="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 active:scale-95 text-sm transition flex items-center gap-1.5">
+        <button onClick={() => fileInputRef.current?.click()} className="px-3 py-1.5 rounded-md bg-[var(--surface-2)] hover:bg-[var(--surface)] active:scale-95 text-sm transition flex items-center gap-1.5">
           <Lucide.Upload size={14} /> Import
         </button>
         <input ref={fileInputRef} type="file" accept="application/json,.json" onChange={handleImportJson} className="hidden" />
-        <button onClick={handleClear} className="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 active:scale-95 text-sm transition flex items-center gap-1.5">
+        <button onClick={toggleTheme} className="px-3 py-1.5 rounded-md bg-[var(--surface-2)] hover:bg-[var(--surface)] active:scale-95 text-sm transition flex items-center gap-1.5">
+          {theme === 'professional' ? 'Slack' : 'Professional'}
+        </button>
+        <button onClick={handleClear} className="px-3 py-1.5 rounded-md bg-[var(--surface-2)] hover:bg-[var(--surface)] active:scale-95 text-sm transition flex items-center gap-1.5">
           <Lucide.Trash2 size={14} /> Clear
         </button>
       </div>
 
       {showIssues && issues.length > 0 && (
         <div className="px-4 pb-3">
-          <div className="rounded-md bg-slate-900 border border-white/10 p-3 max-h-40 overflow-y-auto">
+          <div className="rounded-md bg-[var(--surface-2)] border border-[var(--border)] p-3 max-h-40 overflow-y-auto">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-semibold text-slate-300">Validation Results</span>
               <button onClick={() => setShowIssues(false)} className="text-slate-500 hover:text-slate-300 text-xs">close</button>
