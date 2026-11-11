@@ -1,0 +1,5 @@
+name = "inkfra"
+pages_build_output_dir = "dist"
+
+[vars]
+VITE_BASE = "/"
