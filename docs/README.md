@@ -28,6 +28,7 @@ Welcome to the Inkfra documentation. Inkfra is a browser-based visual canvas tha
 | [Desktop Release Plan](./20-desktop-release-plan.md) | Plan for Windows and Linux executables |
 | [Site Deployment Plan](./21-site-deployment-plan.md) | Plan for deploying as a static site |
 | [Cloudflare Workers Deployment](./22-cloudflare-workers-deployment.md) | Deploy to Cloudflare Workers |
+| [Cloudflare Dashboard CI/CD](./23-cloudflare-dashboard-cicd.md) | Dashboard-based CI/CD setup |
 
 ## Quick links
 
