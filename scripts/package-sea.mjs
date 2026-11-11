@@ -1,4 +1,4 @@
-import { execFileSync } from 'node:child_process'
+import { execFileSync, execSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -25,7 +25,6 @@ fs.rmSync(distDst, { recursive: true, force: true })
 fs.cpSync(distSrc, distDst, { recursive: true })
 
 // 5. Inject blob
-execFileSync('npx.cmd', ['postject', outPath, 'NODE_SEA_BLOB', 'sea-prep.blob',
-  '--sentinel-fuse', 'NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2'], { stdio: 'inherit', shell: true })
+execSync(`npx postject "${outPath}" NODE_SEA_BLOB sea-prep.blob --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2`, { stdio: 'inherit', shell: true })
 
 console.log(`Created ${outPath}`)
