@@ -68,6 +68,7 @@
     "package:sea": "node scripts/package-sea.mjs",
     "cf:dev": "wrangler dev",
     "cf:deploy": "npm run build && wrangler deploy",
+    "verify:cloudflare": "node scripts/verify-cloudflare.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "changeset": "changeset",

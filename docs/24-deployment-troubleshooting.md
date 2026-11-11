@@ -86,9 +86,12 @@ To test the same credentials locally:
 ```powershell
 $env:CLOUDFLARE_API_TOKEN = "<token>"
 $env:CLOUDFLARE_ACCOUNT_ID = "<account-id>"
+npm run verify:cloudflare
 npx wrangler whoami
 npx wrangler deploy
 ```
+
+`verify:cloudflare` checks the token with Cloudflare's `/user/tokens/verify` endpoint and confirms the token can list Workers scripts in the account. It never prints the token or account ID in full.
 
 Do not commit the token. Do not paste it into an issue or chat.
 
