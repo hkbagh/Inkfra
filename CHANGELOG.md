@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0-alpha.1] - 2026-11-11
+
+### Added
+- Cloudflare Workers deployment with CI/CD.
+- Node SEA Windows executable (`inkfra.exe`).
+- Electron wrapper and desktop build workflow.
+- Site deployment plan and GitHub Pages workflow.
+
 ## [0.1.1] - 2026-11-09
 
 ### Added
