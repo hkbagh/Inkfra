@@ -60,6 +60,9 @@ terraform.rc
 # Changesets (keep all changeset files)
 !.changeset/README.md
 
+# Cloudflare
+.wrangler/
+
 # Husky (keep hooks)
 .husky/_/
 

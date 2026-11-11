@@ -62,6 +62,8 @@
     "electron:dev": "npm run dev & electron .",
     "electron:build": "npm run build && electron-builder --win --linux",
     "package:sea": "node scripts/package-sea.mjs",
+    "cf:dev": "wrangler dev",
+    "cf:deploy": "npm run build && wrangler deploy",
     "test": "vitest run",
     "test:watch": "vitest",
     "changeset": "changeset",
@@ -109,6 +111,7 @@
     "prettier": "^3.9.10",
     "typescript": "~7.0.2",
     "vite": "^8.3.6",
-    "vitest": "^5.1.0"
+    "vitest": "^5.1.0",
+    "wrangler": "^4.160.0"
   }
 }
