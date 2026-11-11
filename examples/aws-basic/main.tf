@@ -27,13 +27,13 @@ locals {
 
 resource "aws_vpc" "vpc" {
   cidr_block = "10.0.0.0/16"
-  tags = merge(local.common_tags, { Name = "vpc" })
+  tags       = merge(local.common_tags, { Name = "vpc" })
 }
 
 resource "aws_subnet" "subnet" {
-  cidr_block = "10.0.1.0/24"
+  cidr_block        = "10.0.1.0/24"
   availability_zone = "us-east-1a"
-  vpc_id = aws_vpc.vpc.id
-  tags = merge(local.common_tags, { Name = "subnet" })
-  depends_on = [aws_vpc.vpc]
+  vpc_id            = aws_vpc.vpc.id
+  tags              = merge(local.common_tags, { Name = "subnet" })
+  depends_on        = [aws_vpc.vpc]
 }
