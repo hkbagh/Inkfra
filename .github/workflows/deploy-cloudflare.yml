@@ -12,29 +12,90 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
       - run: npm ci
       - run: npm run build
-      - name: Verify Cloudflare credentials
+
+      - name: Validate Cloudflare credentials
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CLOUDFLARE_API_TOKEN:-}" ]; then
+            echo "::error::Repository secret CLOUDFLARE_API_TOKEN is missing or empty."
+            exit 1
+          fi
+          if [ -z "${CLOUDFLARE_ACCOUNT_ID:-}" ]; then
+            echo "::error::Repository secret CLOUDFLARE_ACCOUNT_ID is missing or empty."
+            exit 1
+          fi
+          echo "CLOUDFLARE_API_TOKEN length: ${#CLOUDFLARE_API_TOKEN}"
+          echo "CLOUDFLARE_ACCOUNT_ID length: ${#CLOUDFLARE_ACCOUNT_ID}"
+
+          token_response=$(curl -sS --fail-with-body \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/user/tokens/verify" || true)
+          echo "Token verification: $(echo "$token_response" | jq -c '{success, errors, status: .result.status}')"
+          if ! echo "$token_response" | jq -e '.success == true' > /dev/null; then
+            echo "::error::Cloudflare API token is invalid or expired: $(echo "$token_response" | jq -c '.errors')"
+            exit 1
+          fi
+
+          workers_response=$(curl -sS --fail-with-body \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts" || true)
+          echo "Workers access: $(echo "$workers_response" | jq -c '{success, errors, scripts: (.result | length)}')"
+          if ! echo "$workers_response" | jq -e '.success == true' > /dev/null; then
+            echo "::error::Cloudflare account ID is wrong or the token lacks Workers Scripts access: $(echo "$workers_response" | jq -c '.errors')"
+            exit 1
+          fi
+
+      - name: Verify Wrangler authentication
         continue-on-error: true
         run: npx wrangler whoami 2>&1 | tee wrangler-whoami.log
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           WRANGLER_SEND_METRICS: 'false'
+
       - name: Deploy to Cloudflare Workers
-        run: npx wrangler deploy 2>&1 | tee wrangler-deploy.log
+        id: deploy
+        run: |
+          set -o pipefail
+          npx wrangler deploy 2>&1 | tee wrangler-deploy.log
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           WRANGLER_SEND_METRICS: 'false'
+
+      - name: Verify live site
+        run: |
+          for attempt in 1 2 3 4 5; do
+            if curl -sSf https://inkfra.bagh.co.in | grep -q 'Visual Infrastructure as Code'; then
+              echo "Live site responded with the Inkfra page (attempt ${attempt})."
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::Deployment completed, but https://inkfra.bagh.co.in did not serve the expected page."
+          exit 1
+
+      - name: Report deploy failure
+        if: failure() && steps.deploy.outcome == 'failure'
+        run: |
+          if [ -f wrangler-deploy.log ]; then
+            message=$(grep -E 'ERROR|Error|error' wrangler-deploy.log | tail -n 3 | tr '\n' ' ' | cut -c1-900)
+            echo "::error::wrangler deploy failed: ${message:-see wrangler-deploy.log}"
+          fi
+
       - name: Upload Wrangler logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: wrangler-logs
           path: |

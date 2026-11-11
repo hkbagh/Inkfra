@@ -1,35 +1,62 @@
 # Cloudflare Dashboard CI/CD Setup
 
-This guide connects Inkfra to Cloudflare via the dashboard (no GitHub Actions required).
+This guide connects Inkfra to Cloudflare Workers Builds through the Cloudflare dashboard. No GitHub Actions secrets are required.
+
+Use this path **or** the GitHub Actions workflow in `.github/workflows/deploy-cloudflare.yml`, not both.
 
 ## Prerequisites
-- Cloudflare account
-- GitHub repository connected to Cloudflare
 
-## Steps (Workers)
-1. Go to Cloudflare Dashboard → Workers & Pages → Create application.
-2. Select **Connect to Git**.
-3. Choose the Inkfra repository and branch `main`.
-4. Build settings:
-   - Build command: `npm run build`
-   - Deploy command: `npx wrangler deploy`
-   - Root directory: `/`
-5. Environment variables:
-   - `VITE_BASE` = `/`
-   - `NODE_VERSION` = `24`
-6. Save and Deploy.
+- A Cloudflare account with Workers enabled.
+- The GitHub repository connected to Cloudflare.
 
-Cloudflare will build and deploy on every push to `main`.
+## Connect the Worker
 
-## Alternative: Pages
-If you prefer Cloudflare Pages:
-1. Create → Pages → Connect to Git.
-2. Build command: `npm run build`
-3. Output directory: `dist`
-4. Deploy.
+1. Open **Cloudflare Dashboard -> Workers & Pages**.
+2. Select **Create application -> Connect to Git**.
+3. Authorize Cloudflare's GitHub integration and select `hkbagh/Inkfra`.
+4. Select the `main` branch.
+5. Configure the build:
 
-## Secrets
-No repository secrets are required when using the dashboard; Cloudflare manages authentication.
+   | Setting        | Value                 |
+   | -------------- | --------------------- |
+   | Build command  | `npm run build`       |
+   | Deploy command | `npx wrangler deploy` |
+   | Root directory | `/`                   |
+   | Node version   | `24`                  |
+
+6. Add environment variables:
+
+   | Variable       | Value |
+   | -------------- | ----- |
+   | `VITE_BASE`    | `/`   |
+   | `NODE_VERSION` | `24`  |
+
+7. Save and deploy.
+
+Cloudflare builds and deploys on every push to `main`.
+
+## Build token
+
+Workers Builds uses an API token stored in **Settings -> Build -> Build Configuration**. If that token is deleted or rotated, builds fail before `npm run build` starts:
+
+```text
+Failed: The build token selected for this build has been deleted or rolled and cannot be used for this build.
+```
+
+Create a new token and select it in the build configuration. See [Deployment Troubleshooting](./24-deployment-troubleshooting.md) for the required permissions and step-by-step recovery.
+
+## Custom domain
+
+Attach `inkfra.bagh.co.in` in **Worker -> Settings -> Domains & Routes**. The `wrangler.toml` file intentionally does not pin the route so the same repository can deploy to preview environments.
+
+## Alternative: Cloudflare Pages
+
+1. Open **Workers & Pages -> Create application -> Pages -> Connect to Git**.
+2. Select the repository and branch.
+3. Set the build command to `npm run build`.
+4. Set the output directory to `dist`.
+5. Deploy.
 
 ## Rollback
-Use the Cloudflare dashboard to roll back to a previous deployment.
+
+Open **Worker -> Deployments**, select a previous deployment, and choose **Rollback**. Build history is retained for 90 days.
