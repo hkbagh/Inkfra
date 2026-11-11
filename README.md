@@ -23,6 +23,10 @@ npm run dev
 
 Open http://localhost:5173.
 
+## Live demo
+
+https://inkfra.bagh.co.in
+
 ## Documentation
 
 See [`docs/README.md`](./docs/README.md).

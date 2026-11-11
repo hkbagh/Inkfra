@@ -1,5 +1,9 @@
 # Plan: Deploy Inkfra as a Static Site
 
+## Live deployment
+
+Production: https://inkfra.bagh.co.in
+
 ## Recommendation
 
 For a static SPA like Inkfra, the best options are:
