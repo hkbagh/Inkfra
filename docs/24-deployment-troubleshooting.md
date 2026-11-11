@@ -39,6 +39,16 @@ If the dropdown still shows only stale tokens:
 
 Cloudflare documents this failure in [Troubleshooting builds](https://developers.cloudflare.com/workers/ci-cd/builds/troubleshoot/#stale-api-token).
 
+If selecting a new token does not clear the error, reinstall the GitHub integration:
+
+1. Open <https://github.com/settings/installations>.
+2. Select **Configure** next to **Cloudflare Workers and Pages**.
+3. Uninstall the app.
+4. Return to **Cloudflare Dashboard -> Workers & Pages -> Create application -> Connect to Git**.
+5. Select **Add account**, install and authorize the app, and reconnect the repository.
+
+See Cloudflare's [GitHub integration guide](https://developers.cloudflare.com/workers/ci-cd/builds/git-integration/github-integration/#reinstall-the-cloudflare-github-app) for the full flow.
+
 ### Symptom: Worker name mismatch
 
 ```text
