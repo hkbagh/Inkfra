@@ -8,7 +8,7 @@ const outPath = path.resolve('release', outName)
 const nodeBin = process.execPath
 
 // 1. Build web app
-execFileSync('npm.cmd', ['run', 'build'], { stdio: 'inherit', shell: true })
+execSync('npm run build', { stdio: 'inherit', shell: true })
 
 // 2. Generate SEA blob
 execFileSync(process.execPath, ['--experimental-sea-config', 'sea-config.json'], { stdio: 'inherit' })
