@@ -1,7 +1,7 @@
 {
   "name": "inkfra",
   "private": true,
-  "version": "0.2.0-alpha.2",
+  "version": "0.2.0-alpha.3",
   "type": "module",
   "main": "electron/main.cjs",
   "description": "Visual-to-IaC canvas that converts architecture diagrams into ready-to-use Terraform code.",
