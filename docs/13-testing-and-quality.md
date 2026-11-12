@@ -17,6 +17,16 @@ terraform validate
 terraform fmt -check
 ```
 
+## CI
+
+The CI workflow runs lint, build, tests, Terraform formatting, and Terraform validation on every pull request and push to `main`. Trigger it manually with:
+
+```bash
+gh workflow run ci.yml --ref main
+```
+
+See [CI/CD Operations](./25-ci-cd-operations.md) for the full workflow.
+
 ## Recommended test matrix
 
 - Empty canvas export blocked by validation.

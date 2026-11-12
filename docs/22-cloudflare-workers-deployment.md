@@ -48,7 +48,23 @@ Required repository secrets:
 - `CLOUDFLARE_API_TOKEN`
 - `CLOUDFLARE_ACCOUNT_ID`
 
-The workflow validates the token and account before deploying, then uploads Wrangler logs as an artifact.
+The workflow validates the token, the account, and access to the `inkfra` Worker service before deploying. It then runs `npx wrangler deploy`, verifies the live site, and uploads Wrangler logs as an artifact.
+
+Run it manually from the UI:
+
+1. Open **Actions → Deploy to Cloudflare Workers**.
+2. Click **Run workflow**.
+3. Select `main` and run it.
+
+Or from the CLI:
+
+```bash
+gh workflow run deploy-cloudflare.yml --ref main
+gh run list --workflow=deploy-cloudflare.yml --limit 5
+gh run watch
+```
+
+See [CI/CD Operations](./25-ci-cd-operations.md) for the complete build, PR, and release workflow.
 
 ## Open-source notes
 

@@ -7,6 +7,8 @@ Inkfra has two possible deployment paths:
 
 Use one path per Worker. Running both causes duplicate deployments and makes failures harder to diagnose.
 
+For the normal build, pull request, deploy, and release sequence, see [CI/CD Operations](./25-ci-cd-operations.md).
+
 ## Cloudflare Workers Builds
 
 ### Symptom: stale build token
@@ -169,6 +171,48 @@ Check:
 4. If fresh runs are also stuck, contact GitHub Support with the run IDs. Only GitHub can clear the stuck queue.
 
 While GitHub Actions is unavailable, use Cloudflare Workers Builds as the deployment path after fixing the build token.
+
+## Re-run or trigger workflows
+
+List recent runs:
+
+```bash
+gh run list --limit 10
+gh run list --workflow=deploy-cloudflare.yml --limit 5
+```
+
+View a failed run and its failed logs:
+
+```bash
+gh run view <run-id>
+gh run view <run-id> --log-failed
+```
+
+Re-run a failed workflow:
+
+```bash
+gh run rerun <run-id> --failed
+```
+
+Trigger a fresh deploy without a new commit:
+
+```bash
+gh workflow run deploy-cloudflare.yml --ref main
+gh run watch
+```
+
+Trigger a desktop build or a desktop release for an existing tag:
+
+```bash
+gh workflow run desktop.yml --ref main
+gh workflow run release-desktop.yml -f tag=v0.2.0-alpha.N
+```
+
+CI also supports manual dispatch:
+
+```bash
+gh workflow run ci.yml --ref main
+```
 
 ## Verify a deployment
 

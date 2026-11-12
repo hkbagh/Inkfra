@@ -13,6 +13,46 @@ Each archive contains the executable and the `dist/` directory. Keep them togeth
 
 The Changesets release workflow creates the version tag. GitHub does not trigger workflows from tag pushes made with the repository `GITHUB_TOKEN`. To publish desktop assets automatically, create a fine-grained personal access token with **Contents: Read and write** and **Pull requests: Read and write**, and store it as the `RELEASE_TOKEN` repository secret. The release workflow uses it when present and falls back to `GITHUB_TOKEN` otherwise.
 
+## Invoking desktop builds and releases
+
+### Manual verification build
+
+Build Windows and Linux bundles without creating a release:
+
+```bash
+gh workflow run desktop.yml --ref main
+gh run list --workflow=desktop.yml --limit 5
+gh run download <run-id>
+```
+
+The artifacts are `inkfra-windows-latest` and `inkfra-ubuntu-latest`. Each contains a zip with the executable and the full `dist/` directory.
+
+You can also build locally:
+
+```bash
+npm run package:sea
+```
+
+This creates `release/inkfra.exe` (Windows) or `release/inkfra` (Linux), plus `release/dist/`.
+
+### Publish a desktop release for an existing tag
+
+If a tag exists but the release workflow did not run:
+
+```bash
+gh workflow run release-desktop.yml -f tag=v0.2.0-alpha.N
+```
+
+In the GitHub UI: **Actions → Release Desktop → Run workflow**, then enter the tag.
+
+The workflow checks out the tag, builds both platforms, and creates or updates the GitHub Release. Tags containing `-alpha` are marked as prereleases.
+
+### Automatic release
+
+With `RELEASE_TOKEN` configured, the Release workflow creates the `v*` tag and the tag push triggers **Release Desktop** automatically. Without it, use the manual dispatch command above.
+
+See [CI/CD Operations](./25-ci-cd-operations.md) for the complete release sequence.
+
 ## Option A — Tauri (recommended)
 
 **Why:** Small bundle size, native webview, Rust backend, built-in updater, cross-platform installers.
