@@ -31,7 +31,9 @@
     { "id": "e11", "source": "web2", "target": "sg_web", "kind": "connects" },
     { "id": "e12", "source": "db", "target": "priv1", "kind": "contains" },
     { "id": "e13", "source": "db", "target": "sg_db", "kind": "connects" },
-    { "id": "e14", "source": "s3", "target": "vpc", "kind": "connects" }
+    { "id": "e14", "source": "s3", "target": "vpc", "kind": "connects" },
+    { "id": "e15", "source": "sg_web", "target": "vpc", "kind": "contains" },
+    { "id": "e16", "source": "sg_db", "target": "vpc", "kind": "contains" }
   ],
   "createdAt": "2026-11-11T00:00:00.000Z",
   "updatedAt": "2026-11-11T00:00:00.000Z"

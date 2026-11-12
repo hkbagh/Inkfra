@@ -35,5 +35,5 @@ Welcome to the Inkfra documentation. Inkfra is a browser-based visual canvas tha
 ## Quick links
 
 - Source code: repository root
-- Proposal: [`docs/Visual-to-IaC-Canvas.md`](./Visual-to-IaC-Canvas.md)
+- Architecture overview: [`docs/02-architecture.md`](./02-architecture.md)
 - License: see repository root

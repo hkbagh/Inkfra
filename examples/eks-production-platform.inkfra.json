@@ -1,0 +1,36 @@
+{
+  "name": "EKS Production Platform",
+  "description": "Multi-AZ AWS VPC with IGW, NAT Gateway, Route Table, EKS Cluster, encrypted RDS, S3 remote state backend, and GitHub Actions OIDC CI/CD.",
+  "provider": "aws",
+  "exportLayout": "modular",
+  "nodes": [
+    { "id": "vpc", "type": "aws_vpc", "label": "Platform VPC", "provider": "aws", "x": 80, "y": 120, "properties": { "cidr_block": "10.20.0.0/16", "name": "eks-platform-vpc", "enable_dns_hostnames": true, "enable_dns_support": true } },
+    { "id": "pub_a", "type": "aws_subnet", "label": "Public Subnet A", "provider": "aws", "x": 360, "y": 60, "properties": { "cidr_block": "10.20.1.0/24", "availability_zone": "us-east-1a", "map_public_ip_on_launch": true, "name": "eks-public-a" } },
+    { "id": "priv_a", "type": "aws_subnet", "label": "Private Subnet A", "provider": "aws", "x": 360, "y": 210, "properties": { "cidr_block": "10.20.11.0/24", "availability_zone": "us-east-1a", "map_public_ip_on_launch": false, "name": "eks-private-a" } },
+    { "id": "priv_b", "type": "aws_subnet", "label": "Private Subnet B", "provider": "aws", "x": 360, "y": 360, "properties": { "cidr_block": "10.20.12.0/24", "availability_zone": "us-east-1b", "map_public_ip_on_launch": false, "name": "eks-private-b" } },
+    { "id": "igw", "type": "aws_internet_gateway", "label": "Internet Gateway", "provider": "aws", "x": 80, "y": 280, "properties": { "name": "eks-igw" } },
+    { "id": "nat", "type": "aws_nat_gateway", "label": "NAT Gateway", "provider": "aws", "x": 640, "y": 60, "properties": { "name": "eks-nat", "connectivity_type": "public" } },
+    { "id": "rt_priv", "type": "aws_route_table", "label": "Private Route Table", "provider": "aws", "x": 640, "y": 210, "properties": { "name": "eks-private-rt" } },
+    { "id": "eks", "type": "aws_eks_cluster", "label": "Production EKS", "provider": "aws", "x": 920, "y": 140, "properties": { "name": "prod-eks", "version": "1.30" } },
+    { "id": "rds", "type": "aws_rds_instance", "label": "App Postgres RDS", "provider": "aws", "x": 920, "y": 300, "properties": { "engine": "postgres", "engine_version": "15", "instance_class": "db.t3.small", "allocated_storage": 50, "username": "appadmin", "skip_final_snapshot": true, "name": "platformdb" } },
+    { "id": "backend", "type": "tf_backend", "label": "S3 Remote State", "provider": "terraform", "x": 80, "y": 420, "properties": { "type": "s3", "bucket": "inkfra-prod-tfstate", "key": "eks-platform/terraform.tfstate", "region": "us-east-1", "encrypt": true, "use_lockfile": true } },
+    { "id": "gha", "type": "devops_github_actions", "label": "GitHub Actions CI/CD", "provider": "devops", "x": 360, "y": 480, "properties": { "workflow": ".github/workflows/infra.yml", "deploy_branch": "main", "provider_auth": "oidc" } }
+  ],
+  "edges": [
+    { "id": "e1", "source": "pub_a", "target": "vpc", "kind": "contains" },
+    { "id": "e2", "source": "priv_a", "target": "vpc", "kind": "contains" },
+    { "id": "e3", "source": "priv_b", "target": "vpc", "kind": "contains" },
+    { "id": "e4", "source": "igw", "target": "vpc", "kind": "contains" },
+    { "id": "e5", "source": "nat", "target": "pub_a", "kind": "contains" },
+    { "id": "e6", "source": "rt_priv", "target": "vpc", "kind": "contains" },
+    { "id": "e7", "source": "rt_priv", "target": "priv_a", "kind": "connects" },
+    { "id": "e8", "source": "rt_priv", "target": "nat", "kind": "routes_to" },
+    { "id": "e9", "source": "eks", "target": "priv_a", "kind": "contains" },
+    { "id": "e10", "source": "eks", "target": "priv_b", "kind": "contains" },
+    { "id": "e11", "source": "rds", "target": "priv_a", "kind": "contains" },
+    { "id": "e12", "source": "rds", "target": "priv_b", "kind": "contains" }
+  ],
+  "createdAt": "2026-11-12T00:00:00.000Z",
+  "updatedAt": "2026-11-12T00:00:00.000Z"
+}
+

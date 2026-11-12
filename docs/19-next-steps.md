@@ -104,13 +104,14 @@ This document defines the next implementation steps to move Inkfra from its curr
 - External contributors can add resources without core changes.
 - Monthly releases with changelogs.
 
-## Immediate next actions (this sprint)
+## Immediate next actions (status)
 
-1. Run a schema audit of the top 20 AWS resources.
-2. Add golden-file tests for the AWS basic example.
-3. Add tfsec to CI.
-4. Implement undo/redo in the store.
-5. Add a `docs/` search and navigation improvements.
+1. [x] Implement undo/redo, duplicate, auto-layout, and `localStorage` autosave in the store.
+2. [x] Add required-field, CIDR, port, multi-cloud parent, and security posture validation rules (`validate.ts`).
+3. [x] Implement implicit AWS/Azure/GCP glue, modular multi-environment export, and runnable DevOps emitters (`devops.ts`).
+4. [x] Add `.tf` HCL importer (`tfImport.ts`) and production blueprints (`eks-production-platform`, `docker-observability-stack`).
+5. [x] Regenerate and validate `examples/` with `terraform validate` and `terraform fmt -check` + `tflint` in CI.
+6. [ ] Add Playwright E2E browser tests and native nested container subflows.
 
 ## Metrics
 

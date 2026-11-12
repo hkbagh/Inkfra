@@ -1,0 +1,144 @@
+{
+  "name": "Kubernetes GitOps Platform",
+  "description": "Production Kubernetes and GitOps platform emitting modular Terraform kubernetes_* manifests, Kustomize + Deployment/Service YAML, cert-manager ClusterIssuer, ArgoCD Application, Prometheus/Grafana provisioning, and GitHub Actions OIDC.",
+  "provider": "multi",
+  "exportLayout": "modular",
+  "nodes": [
+    {
+      "id": "ns",
+      "type": "k8s_namespace",
+      "label": "Production Namespace",
+      "provider": "kubernetes",
+      "x": 80,
+      "y": 200,
+      "properties": { "name": "production" }
+    },
+    {
+      "id": "ingress",
+      "type": "k8s_ingress",
+      "label": "HTTPS Ingress",
+      "provider": "kubernetes",
+      "x": 360,
+      "y": 70,
+      "properties": { "name": "web-ingress", "host": "app.inkfra.io", "path": "/", "service_name": "web-svc" }
+    },
+    {
+      "id": "cert",
+      "type": "sec_cert_manager",
+      "label": "cert-manager TLS",
+      "provider": "devops",
+      "x": 360,
+      "y": 200,
+      "properties": {}
+    },
+    {
+      "id": "web_svc",
+      "type": "k8s_service",
+      "label": "Web Service",
+      "provider": "kubernetes",
+      "x": 640,
+      "y": 70,
+      "properties": { "name": "web-svc", "type": "ClusterIP", "port": 80, "target_port": 8080 }
+    },
+    {
+      "id": "web_deploy",
+      "type": "k8s_deployment",
+      "label": "Web Deployment",
+      "provider": "kubernetes",
+      "x": 920,
+      "y": 70,
+      "properties": { "name": "web-api", "replicas": 3, "image": "ghcr.io/org/web-api:1.4.2", "port": 8080 }
+    },
+    {
+      "id": "hpa",
+      "type": "k8s_hpa",
+      "label": "Web HPA",
+      "provider": "kubernetes",
+      "x": 920,
+      "y": 200,
+      "properties": { "name": "web-api-hpa", "min_replicas": 3, "max_replicas": 12, "target_cpu": 75 }
+    },
+    {
+      "id": "cm",
+      "type": "k8s_configmap",
+      "label": "App ConfigMap",
+      "provider": "kubernetes",
+      "x": 640,
+      "y": 210,
+      "properties": { "name": "web-api-config", "data": "LOG_LEVEL: info\nOTEL_EXPORTER: prometheus" }
+    },
+    {
+      "id": "pvc",
+      "type": "k8s_pvc",
+      "label": "Metrics PVC",
+      "provider": "kubernetes",
+      "x": 640,
+      "y": 340,
+      "properties": { "name": "prometheus-data", "storage_class": "gp3", "access_modes": "ReadWriteOnce", "storage": "50Gi" }
+    },
+    {
+      "id": "prom",
+      "type": "obs_prometheus",
+      "label": "Prometheus",
+      "provider": "devops",
+      "x": 920,
+      "y": 340,
+      "properties": { "scrape_interval": "15s" }
+    },
+    {
+      "id": "graf",
+      "type": "obs_grafana",
+      "label": "Grafana",
+      "provider": "devops",
+      "x": 920,
+      "y": 460,
+      "properties": { "admin_user": "platform-admin" }
+    },
+    {
+      "id": "argocd",
+      "type": "devops_argocd_app",
+      "label": "ArgoCD GitOps",
+      "provider": "devops",
+      "x": 360,
+      "y": 340,
+      "properties": {
+        "name": "prod-platform",
+        "repo_url": "https://github.com/org/gitops-platform.git",
+        "path": "k8s",
+        "namespace": "production"
+      }
+    },
+    {
+      "id": "gha",
+      "type": "devops_github_actions",
+      "label": "GitHub Actions CI/CD",
+      "provider": "devops",
+      "x": 80,
+      "y": 350,
+      "properties": {
+        "workflow": ".github/workflows/infra.yml",
+        "deploy_branch": "main",
+        "provider_auth": "oidc"
+      }
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "ingress", "target": "ns", "kind": "contains" },
+    { "id": "e2", "source": "web_svc", "target": "ns", "kind": "contains" },
+    { "id": "e3", "source": "web_deploy", "target": "ns", "kind": "contains" },
+    { "id": "e4", "source": "cm", "target": "ns", "kind": "contains" },
+    { "id": "e5", "source": "pvc", "target": "ns", "kind": "contains" },
+    { "id": "e6", "source": "ingress", "target": "cert", "kind": "authenticates" },
+    { "id": "e7", "source": "ingress", "target": "web_svc", "kind": "routes_to" },
+    { "id": "e8", "source": "web_svc", "target": "web_deploy", "kind": "traffic" },
+    { "id": "e9", "source": "web_deploy", "target": "cm", "kind": "mounts" },
+    { "id": "e10", "source": "hpa", "target": "web_deploy", "kind": "connects" },
+    { "id": "e11", "source": "prom", "target": "pvc", "kind": "mounts" },
+    { "id": "e12", "source": "graf", "target": "prom", "kind": "connects" },
+    { "id": "e13", "source": "argocd", "target": "ns", "kind": "connects" },
+    { "id": "e14", "source": "gha", "target": "argocd", "kind": "triggers" }
+  ],
+  "createdAt": "2026-11-12T00:00:00.000Z",
+  "updatedAt": "2026-11-12T00:00:00.000Z"
+}
+

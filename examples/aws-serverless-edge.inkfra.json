@@ -1,0 +1,132 @@
+{
+  "name": "AWS Serverless Edge API",
+  "description": "Global edge and event-driven serverless stack with CloudFront CDN, encrypted private S3 origin, Cognito auth, API Gateway, Lambda, DynamoDB, FIFO SQS queue, SNS alerts, S3 remote state, and GitHub Actions OIDC.",
+  "provider": "aws",
+  "exportLayout": "modular",
+  "nodes": [
+    {
+      "id": "cdn",
+      "type": "aws_cloudfront_distribution",
+      "label": "CloudFront Edge CDN",
+      "provider": "aws",
+      "x": 80,
+      "y": 140,
+      "properties": { "comment": "Edge CDN for static assets and API" }
+    },
+    {
+      "id": "assets",
+      "type": "aws_s3_bucket",
+      "label": "Static Web Origin",
+      "provider": "aws",
+      "x": 360,
+      "y": 60,
+      "properties": { "bucket": "inkfra-edge-assets-prod", "acl": "private", "versioning": true }
+    },
+    {
+      "id": "apigw",
+      "type": "aws_api_gateway",
+      "label": "Edge REST API",
+      "provider": "aws",
+      "x": 360,
+      "y": 220,
+      "properties": { "name": "edge-public-api" }
+    },
+    {
+      "id": "cognito",
+      "type": "aws_cognito_user_pool",
+      "label": "Cognito Users",
+      "provider": "aws",
+      "x": 360,
+      "y": 370,
+      "properties": { "name": "edge-api-users" }
+    },
+    {
+      "id": "lambda",
+      "type": "aws_lambda_function",
+      "label": "API Handler Lambda",
+      "provider": "aws",
+      "x": 650,
+      "y": 220,
+      "properties": {
+        "function_name": "edge-api-handler",
+        "runtime": "nodejs20.x",
+        "handler": "index.handler",
+        "memory_size": 256,
+        "timeout": 15
+      }
+    },
+    {
+      "id": "ddb",
+      "type": "aws_dynamodb_table",
+      "label": "Sessions DynamoDB",
+      "provider": "aws",
+      "x": 940,
+      "y": 120,
+      "properties": {
+        "name": "edge-sessions",
+        "hash_key": "session_id",
+        "billing_mode": "PAY_PER_REQUEST"
+      }
+    },
+    {
+      "id": "sqs",
+      "type": "aws_sqs_queue",
+      "label": "Async Jobs FIFO",
+      "provider": "aws",
+      "x": 940,
+      "y": 260,
+      "properties": { "name": "edge-jobs.fifo", "fifo_queue": true }
+    },
+    {
+      "id": "sns",
+      "type": "aws_sns_topic",
+      "label": "Ops Alerts Topic",
+      "provider": "aws",
+      "x": 940,
+      "y": 400,
+      "properties": { "name": "edge-ops-alerts" }
+    },
+    {
+      "id": "backend",
+      "type": "tf_backend",
+      "label": "S3 Remote State",
+      "provider": "terraform",
+      "x": 80,
+      "y": 340,
+      "properties": {
+        "type": "s3",
+        "bucket": "inkfra-serverless-tfstate",
+        "key": "serverless-edge/terraform.tfstate",
+        "region": "us-east-1",
+        "encrypt": true,
+        "use_lockfile": true
+      }
+    },
+    {
+      "id": "gha",
+      "type": "devops_github_actions",
+      "label": "GitHub Actions OIDC",
+      "provider": "devops",
+      "x": 650,
+      "y": 400,
+      "properties": {
+        "workflow": ".github/workflows/infra.yml",
+        "deploy_branch": "main",
+        "provider_auth": "oidc"
+      }
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "cdn", "target": "assets", "kind": "routes_to", "label": "static" },
+    { "id": "e2", "source": "cdn", "target": "apigw", "kind": "routes_to", "label": "/api/*" },
+    { "id": "e3", "source": "apigw", "target": "cognito", "kind": "authenticates" },
+    { "id": "e4", "source": "apigw", "target": "lambda", "kind": "traffic" },
+    { "id": "e5", "source": "lambda", "target": "ddb", "kind": "connects" },
+    { "id": "e6", "source": "lambda", "target": "sqs", "kind": "connects" },
+    { "id": "e7", "source": "sqs", "target": "sns", "kind": "triggers" },
+    { "id": "e8", "source": "gha", "target": "backend", "kind": "depends_on" }
+  ],
+  "createdAt": "2026-11-12T00:00:00.000Z",
+  "updatedAt": "2026-11-12T00:00:00.000Z"
+}
+

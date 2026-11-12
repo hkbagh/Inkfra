@@ -1,10 +1,11 @@
 # Testing & Quality
 
-## Static checks
+## Static checks & unit tests
 
 ```bash
 npm run lint   # oxlint
 npm run build  # tsc -b + vite build
+npm run test   # vitest unit tests (hcl, project, validate, terraform, examples, store)
 ```
 
 ## Terraform validation

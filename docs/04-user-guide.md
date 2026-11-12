@@ -12,33 +12,37 @@
 
 ## 3. Connect resources
 
-- Drag from a handle on one node to a handle on another to create a connection.
-- Click a connection to change its kind (contains, depends on, connects, traffic, mounts, routes to).
+- Hover any resource to reveal **top, right, bottom, and left** connection points (`ConnectionMode.Loose`) — connect from any side to any side (for example, top-to-top) or drop directly onto any target resource's body.
+- Switch to **Connect mode (`C`)** in the top-left canvas toolbar (or press `C`) to drag wires directly from any resource body without hunting for edge dots; press `V` or `Esc` to return to **Move mode**.
+- Drag any existing connector endpoint to reconnect it to another side or resource.
+- Click a connection to change its kind (`contains`, `depends_on`, `connects`, `traffic`, `mounts`, `routes_to`) or swap its direction.
 
-## 4. Edit properties
+## 4. Organize, undo, and edit properties
 
-- Click a node to open the properties panel.
-- Edit the label and provider-specific properties.
+- Use **Undo (`Ctrl+Z`)**, **Redo (`Ctrl+Shift+Z` / `Ctrl+Y`)**, **Duplicate (`Ctrl+D`)**, and **Layout** from the top-left canvas controls or keyboard shortcuts.
+- Click a resource to open the properties panel; required fields are marked with `*`.
+- Your canvas is automatically saved locally in browser storage (`inkfra:autosave:v1`) across reloads.
 
 ## 5. Validate
 
-- Click **Validate** to run diagram checks.
-- Review errors/warnings in the validation panel.
-- Clicking issues is informational; fix the underlying nodes.
+- Click **Validate** to run diagram, CIDR, port, required-field, and security checks.
+- Click any issue in the validation banner to focus and center the offending resource on the canvas.
 
-## 6. Generate Terraform
+## 6. Preview & Generate Terraform
 
+- Click **Preview .tf** to inspect live-generated `main.tf`, `variables.tf`, `outputs.tf`, and `README.md`, copy any file, or download the bundle.
 - Click **Generate .tf** to download a ZIP containing `main.tf`, `variables.tf`, `outputs.tf`, and `README.md`.
-- If validation errors exist, generation is blocked.
+- If validation errors exist, ZIP export is blocked (warnings remain informational).
 
 ## 7. Import / Export
 
-- **Export** saves the project as JSON.
-- **Import** loads a previously exported JSON file.
+- **Examples** loads curated blueprints (`aws-basic`, `three-tier-webapp`).
+- **Export** saves the project as `.inkfra.json` (preserving connector anchor sides).
+- **Import** loads a previously exported `.inkfra.json` file.
 - See [Import & Export](./09-import-export.md).
 
 ## Tips
 
-- Use **contains** edges to express that a resource lives inside another (e.g., subnet in VPC).
-- Use **depends_on** for ordering without a direct reference.
-- Run `terraform fmt` on generated code for canonical formatting.
+- Use **contains** or parent-child edges in either direction — Inkfra resolves the provider hierarchy automatically (e.g., subnet ↔ VPC, security group ↔ VPC, deployment ↔ namespace).
+- Use **depends_on** for explicit ordering without a direct reference.
+- Generated HCL is pre-formatted to canonical `terraform fmt` style.

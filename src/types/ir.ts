@@ -68,14 +68,19 @@ export interface InfraEdge {
   id: string
   source: string
   target: string
+  sourceHandle?: string
+  targetHandle?: string
   kind: EdgeKind
   label?: string
 }
+
+export type ExportLayout = 'modular' | 'single'
 
 export interface Project {
   name: string
   description?: string
   provider: 'aws' | 'azure' | 'gcp' | 'multi'
+  exportLayout?: ExportLayout
   nodes: InfraNode[]
   edges: InfraEdge[]
   createdAt: string

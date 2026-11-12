@@ -1,45 +1,58 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
-:root,
-[data-theme="professional"] {
-  --bg: #0b1220;
-  --surface: #111a2e;
-  --surface-2: #1e2a44;
-  --border: rgba(255, 255, 255, 0.08);
-  --text: #e6e9ef;
-  --text-muted: #94a3b8;
-  --accent: #3b82f6;
-  --accent-soft: rgba(59, 130, 246, 0.15);
-  --radius: 8px;
-  --shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+:root {
+  --bg: #060a13;
+  --surface: #0b1220;
+  --surface-2: #111b2e;
+  --surface-3: #17243c;
+  --border: rgba(148, 163, 184, 0.14);
+  --border-strong: rgba(148, 163, 184, 0.28);
+  --text: #eef2fb;
+  --text-muted: #93a3ba;
+  --accent: #5b8cff;
+  --accent-2: #8b5cf6;
+  --accent-soft: rgba(91, 140, 255, 0.15);
+  --success: #34d399;
+  --warning: #fbbf24;
+  --danger: #f87171;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 24px 54px rgba(0, 0, 0, 0.48);
+  --shadow-sm: 0 10px 28px rgba(0, 0, 0, 0.28);
 }
 
-[data-theme="slack"] {
-  --bg: #1a1d21;
-  --surface: #222529;
-  --surface-2: #2c2f33;
-  --border: rgba(255, 255, 255, 0.06);
-  --text: #d1d2d3;
-  --text-muted: #ababad;
-  --accent: #4a154b;
-  --accent-soft: rgba(74, 21, 75, 0.25);
-  --radius: 10px;
-  --shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
-}
-
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
   margin: 0;
-  background: var(--bg);
+  overflow: hidden;
+}
+
+body {
+  background:
+    radial-gradient(950px 520px at 14% -10%, rgba(59, 130, 246, 0.14), transparent 62%),
+    radial-gradient(760px 440px at 96% 0%, rgba(139, 92, 246, 0.1), transparent 56%),
+    var(--bg);
   color: var(--text);
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+::selection {
+  background: rgba(91, 140, 255, 0.35);
+}
+
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--surface-2) var(--bg);
+  scrollbar-color: var(--surface-3) transparent;
 }
 
 *:focus-visible {
@@ -47,11 +60,368 @@ html, body, #root {
   outline-offset: 2px;
 }
 
-/* Theme-aware utility shortcuts */
-.themed-bg { background: var(--bg); }
-.themed-surface { background: var(--surface); }
-.themed-border { border-color: var(--border); }
-.themed-text { color: var(--text); }
-.themed-muted { color: var(--text-muted); }
-.themed-accent { color: var(--accent); }
-.themed-radius { border-radius: var(--radius); }
+@layer components {
+  .toolbar {
+    background: linear-gradient(180deg, rgba(12, 20, 36, 0.94), rgba(9, 15, 28, 0.92));
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.04) inset,
+      0 12px 30px rgba(0, 0, 0, 0.22);
+  }
+
+  .glass-panel {
+    background: rgba(11, 18, 32, 0.88);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  .btn {
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    height: 2.0625rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.42rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    padding: 0 0.78rem;
+    color: var(--text);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    transition:
+      background-color 160ms ease,
+      border-color 160ms ease,
+      color 160ms ease,
+      box-shadow 180ms ease,
+      transform 140ms cubic-bezier(0.22, 1, 0.36, 1),
+      filter 160ms ease;
+  }
+
+  .btn:hover:not(:disabled) {
+    transform: translateY(-0.5px);
+  }
+
+  .btn:active:not(:disabled) {
+    transform: translateY(1px) scale(0.98);
+  }
+
+  .btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .btn svg {
+    flex-shrink: 0;
+  }
+
+  .btn-icon {
+    width: 2.0625rem;
+    padding: 0;
+  }
+
+  .btn-primary {
+    border-color: rgba(255, 255, 255, 0.18);
+    background: linear-gradient(135deg, #4b7bff 0%, #6366f1 52%, #7c5cff 100%);
+    color: #fff;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.22) inset,
+      0 8px 22px rgba(79, 125, 255, 0.3);
+  }
+
+  .btn-primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 25%, rgba(255, 255, 255, 0.22) 50%, transparent 75%);
+    transform: translateX(-120%);
+    transition: transform 650ms cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+
+  .btn-primary:hover:not(:disabled)::after {
+    transform: translateX(120%);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    filter: brightness(1.07);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.28) inset,
+      0 12px 28px rgba(79, 125, 255, 0.42);
+  }
+
+  .btn-secondary {
+    border-color: var(--border);
+    background: linear-gradient(180deg, rgba(23, 36, 60, 0.72), rgba(17, 27, 46, 0.92));
+    color: var(--text);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+  }
+
+  .btn-secondary:hover:not(:disabled) {
+    border-color: var(--border-strong);
+    background: linear-gradient(180deg, rgba(29, 44, 73, 0.92), rgba(21, 33, 56, 0.98));
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.07) inset,
+      0 6px 16px rgba(0, 0, 0, 0.22);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-muted);
+  }
+
+  .btn-ghost:hover:not(:disabled) {
+    background: rgba(148, 163, 184, 0.1);
+    color: var(--text);
+    border-color: rgba(148, 163, 184, 0.12);
+  }
+
+  .btn-danger {
+    border-color: rgba(248, 113, 113, 0.24);
+    background: rgba(248, 113, 113, 0.11);
+    color: #fca5a5;
+  }
+
+  .btn-danger:hover:not(:disabled) {
+    border-color: rgba(248, 113, 113, 0.4);
+    background: rgba(248, 113, 113, 0.2);
+    color: #fecaca;
+    box-shadow: 0 8px 20px rgba(248, 113, 113, 0.14);
+  }
+
+  .input,
+  .select {
+    height: 2.0625rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface-2);
+    color: var(--text);
+    font-size: 0.8125rem;
+    outline: none;
+    transition:
+      background-color 150ms ease,
+      border-color 150ms ease,
+      box-shadow 150ms ease;
+  }
+
+  .input {
+    padding: 0 0.65rem;
+  }
+
+  .select {
+    padding: 0 0.5rem;
+  }
+
+  textarea.input {
+    height: auto;
+  }
+
+  .input::placeholder {
+    color: #6f7f96;
+  }
+
+  .input:hover,
+  .select:hover {
+    border-color: var(--border-strong);
+  }
+
+  .input:focus,
+  .select:focus {
+    border-color: rgba(91, 140, 255, 0.7);
+    background: var(--surface-2);
+    box-shadow: 0 0 0 3px rgba(91, 140, 255, 0.15);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface-2);
+    padding: 0.16rem 0.55rem;
+    color: var(--text-muted);
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .chip-accent {
+    border-color: rgba(91, 140, 255, 0.35);
+    background: var(--accent-soft);
+    color: #b4cbff;
+  }
+
+  .resource-item::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 3px;
+    height: 0;
+    border-radius: 999px;
+    background: var(--resource-color, var(--accent));
+    opacity: 0;
+    transform: translateY(-50%);
+    transition:
+      height 170ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 170ms ease;
+  }
+
+  .resource-item:hover::before {
+    height: 1.35rem;
+    opacity: 1;
+  }
+}
+
+/* React Flow controls & minimap */
+.react-flow__controls {
+  overflow: hidden;
+  border: 1px solid var(--border) !important;
+  border-radius: 11px !important;
+  background: rgba(11, 18, 32, 0.9) !important;
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.react-flow__controls-button {
+  width: 30px;
+  height: 30px;
+  border-bottom: 1px solid var(--border) !important;
+  background: transparent !important;
+  color: var(--text-muted) !important;
+  transition: background-color 140ms ease, color 140ms ease;
+}
+
+.react-flow__controls-button:hover {
+  background: var(--surface-2) !important;
+  color: var(--text) !important;
+}
+
+.react-flow__controls-button svg {
+  fill: currentColor;
+}
+
+.react-flow__minimap {
+  overflow: hidden;
+  border: 1px solid var(--border) !important;
+  border-radius: 12px !important;
+  background: rgba(11, 18, 32, 0.9) !important;
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-sm) !important;
+}
+
+/* Upgraded node handles */
+.react-flow__handle.node-handle {
+  width: 11px;
+  height: 11px;
+  border: 2px solid var(--surface);
+  background: #64748b;
+  box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.35);
+  transition:
+    transform 160ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 160ms ease,
+    box-shadow 160ms ease,
+    opacity 160ms ease;
+}
+
+.react-flow__handle.node-handle::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 999px;
+}
+
+.inkfra-node:hover .react-flow__handle.node-handle,
+.inkfra-node-selected .react-flow__handle.node-handle {
+  background: var(--node-color, var(--accent));
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 10px var(--node-color, var(--accent));
+}
+
+.react-flow__handle.node-handle:hover,
+.react-flow__handle.node-handle.connectingto {
+  transform: scale(1.4);
+  background: var(--node-color, var(--accent));
+  box-shadow:
+    0 0 0 3px rgba(91, 140, 255, 0.25),
+    0 0 14px var(--node-color, var(--accent));
+}
+
+.react-flow__attribution {
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 9px;
+  opacity: 0.45;
+}
+
+.react-flow__attribution a {
+  color: inherit;
+}
+
+/* Connector animations */
+@keyframes inkfra-dash-flow {
+  from {
+    stroke-dashoffset: 24;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.inkfra-edge-flow {
+  animation: inkfra-dash-flow 0.9s linear infinite;
+}
+
+.inkfra-connection-line {
+  animation: inkfra-dash-flow 0.7s linear infinite;
+}
+
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dialog-overlay {
+  animation: overlay-in 180ms ease-out both;
+}
+
+.dialog-content {
+  animation: dialog-in 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .inkfra-edge-flow,
+  .inkfra-connection-line,
+  .dialog-overlay,
+  .dialog-content {
+    animation: none !important;
+  }
+  .btn,
+  .btn::after,
+  .react-flow__handle.node-handle {
+    transition: none !important;
+  }
+}

@@ -39,7 +39,9 @@ interface ResourceDef {
 
 ## Terraform mapping
 
-Resources with a `terraformType` are emitted as Terraform resources. Resources without one are skipped with a warning. Generic resources are never emitted.
+Resources with a `terraformType` are emitted as Terraform resources in `main.tf`. Terraform meta nodes (`tf_variable`, `tf_output`, `tf_backend`, `tf_module_call`, and `devops_terraform_module`) are also translated directly into `variables.tf`, `outputs.tf`, `terraform { backend }`, and `module` blocks. Generic conceptual blocks are never emitted, and unmapped non-generic resources are skipped with a warning.
+
+Essential properties are flagged with `required: true` in `catalog.ts` so both the Properties Panel (`*`) and validator enforce them early.
 
 ## Property types
 

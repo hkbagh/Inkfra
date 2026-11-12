@@ -1,0 +1,127 @@
+{
+  "name": "GCP Cloud Run & Cloud SQL",
+  "description": "Cloud-native Google Cloud stack with custom VPC network, private subnetwork, scoped firewall rules, Cloud Run service, Cloud SQL Postgres 15, Pub/Sub event bus, GCS bucket, IAM service account, GCS remote state, and GitHub OIDC.",
+  "provider": "gcp",
+  "exportLayout": "modular",
+  "nodes": [
+    {
+      "id": "vpc",
+      "type": "google_compute_network",
+      "label": "Custom VPC",
+      "provider": "gcp",
+      "x": 80,
+      "y": 150,
+      "properties": { "name": "gcp-prod-vpc", "auto_create_subnetworks": false }
+    },
+    {
+      "id": "subnet",
+      "type": "google_compute_subnetwork",
+      "label": "App Subnetwork",
+      "provider": "gcp",
+      "x": 360,
+      "y": 80,
+      "properties": { "name": "gcp-app-subnet", "ip_cidr_range": "10.40.1.0/24", "region": "us-central1" }
+    },
+    {
+      "id": "fw",
+      "type": "google_compute_firewall",
+      "label": "Internal HTTPS FW",
+      "provider": "gcp",
+      "x": 360,
+      "y": 230,
+      "properties": { "name": "allow-internal-https", "allowed": "tcp:443,8080", "source_ranges": "10.40.0.0/16" }
+    },
+    {
+      "id": "run",
+      "type": "google_cloud_run_service",
+      "label": "Cloud Run API",
+      "provider": "gcp",
+      "x": 650,
+      "y": 150,
+      "properties": { "name": "api-gateway-run", "location": "us-central1" }
+    },
+    {
+      "id": "sql",
+      "type": "google_sql_database_instance",
+      "label": "Cloud SQL Postgres",
+      "provider": "gcp",
+      "x": 940,
+      "y": 70,
+      "properties": {
+        "name": "prod-pg-primary",
+        "database_version": "POSTGRES_15",
+        "region": "us-central1",
+        "tier": "db-custom-2-7680"
+      }
+    },
+    {
+      "id": "pubsub",
+      "type": "google_pubsub_topic",
+      "label": "Events Pub/Sub",
+      "provider": "gcp",
+      "x": 940,
+      "y": 210,
+      "properties": { "name": "domain-events-topic" }
+    },
+    {
+      "id": "gcs",
+      "type": "google_storage_bucket",
+      "label": "Artifacts Bucket",
+      "provider": "gcp",
+      "x": 940,
+      "y": 350,
+      "properties": { "name": "inkfra-gcp-artifacts-prod", "location": "US", "storage_class": "STANDARD" }
+    },
+    {
+      "id": "sa",
+      "type": "google_iam_service_account",
+      "label": "Runtime Identity SA",
+      "provider": "gcp",
+      "x": 650,
+      "y": 320,
+      "properties": { "account_id": "cloudrun-runtime", "display_name": "Cloud Run Runtime SA" }
+    },
+    {
+      "id": "backend",
+      "type": "tf_backend",
+      "label": "GCS Remote State",
+      "provider": "terraform",
+      "x": 80,
+      "y": 340,
+      "properties": {
+        "type": "gcs",
+        "bucket": "inkfra-gcp-tfstate",
+        "key": "cloud-run-platform",
+        "region": "us-central1",
+        "encrypt": true,
+        "use_lockfile": true
+      }
+    },
+    {
+      "id": "gha",
+      "type": "devops_github_actions",
+      "label": "GitHub Actions OIDC",
+      "provider": "devops",
+      "x": 360,
+      "y": 390,
+      "properties": {
+        "workflow": ".github/workflows/infra.yml",
+        "deploy_branch": "main",
+        "provider_auth": "oidc"
+      }
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "subnet", "target": "vpc", "kind": "contains" },
+    { "id": "e2", "source": "fw", "target": "vpc", "kind": "contains" },
+    { "id": "e3", "source": "run", "target": "subnet", "kind": "connects" },
+    { "id": "e4", "source": "run", "target": "sa", "kind": "authenticates" },
+    { "id": "e5", "source": "run", "target": "sql", "kind": "connects" },
+    { "id": "e6", "source": "run", "target": "pubsub", "kind": "connects" },
+    { "id": "e7", "source": "run", "target": "gcs", "kind": "connects" },
+    { "id": "e8", "source": "gha", "target": "backend", "kind": "depends_on" }
+  ],
+  "createdAt": "2026-11-12T00:00:00.000Z",
+  "updatedAt": "2026-11-12T00:00:00.000Z"
+}
+

@@ -1,0 +1,25 @@
+{
+  "name": "Container & Monitoring Stack",
+  "description": "Local and edge DevOps stack generating Docker Compose, NGINX upstream proxy config, Prometheus scrape targets, Grafana provisioning, and GitLab CI.",
+  "provider": "multi",
+  "exportLayout": "modular",
+  "nodes": [
+    { "id": "nginx", "type": "net_nginx", "label": "NGINX Reverse Proxy", "provider": "devops", "x": 80, "y": 140, "properties": { "worker_processes": 4 } },
+    { "id": "api", "type": "docker_container", "label": "API Service", "provider": "docker", "x": 360, "y": 140, "properties": { "name": "api", "image": "node:20-alpine", "ports_internal": 8080, "ports_external": 8080 } },
+    { "id": "pg", "type": "db_postgres", "label": "Postgres DB", "provider": "devops", "x": 640, "y": 80, "properties": { "version": "15", "port": 5432 } },
+    { "id": "redis", "type": "db_redis", "label": "Redis Cache", "provider": "devops", "x": 640, "y": 220, "properties": { "port": 6379 } },
+    { "id": "prom", "type": "obs_prometheus", "label": "Prometheus", "provider": "devops", "x": 360, "y": 320, "properties": { "scrape_interval": "15s" } },
+    { "id": "graf", "type": "obs_grafana", "label": "Grafana", "provider": "devops", "x": 640, "y": 340, "properties": { "admin_user": "admin" } },
+    { "id": "gitlab", "type": "devops_gitlab_ci", "label": "GitLab CI Pipeline", "provider": "devops", "x": 80, "y": 320, "properties": { "config": ".gitlab-ci.yml", "deploy_branch": "main", "provider_auth": "oidc" } }
+  ],
+  "edges": [
+    { "id": "e1", "source": "nginx", "target": "api", "kind": "routes_to" },
+    { "id": "e2", "source": "api", "target": "pg", "kind": "connects" },
+    { "id": "e3", "source": "api", "target": "redis", "kind": "connects" },
+    { "id": "e4", "source": "prom", "target": "api", "kind": "connects" },
+    { "id": "e5", "source": "graf", "target": "prom", "kind": "connects" }
+  ],
+  "createdAt": "2026-11-12T00:00:00.000Z",
+  "updatedAt": "2026-11-12T00:00:00.000Z"
+}
+

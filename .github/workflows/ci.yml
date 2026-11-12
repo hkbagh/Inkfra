@@ -37,3 +37,31 @@ jobs:
         run: |
           terraform init -backend=false
           terraform validate
+      - name: Terraform validate (eks-production-platform)
+        working-directory: examples/eks-production-platform
+        run: |
+          terraform init -backend=false
+          terraform validate
+      - name: Terraform validate (eks-production-platform bootstrap)
+        working-directory: examples/eks-production-platform/bootstrap
+        run: |
+          terraform init -backend=false
+          terraform validate
+      - name: Terraform validate (aws-serverless-edge)
+        working-directory: examples/aws-serverless-edge
+        run: |
+          terraform init -backend=false
+          terraform validate
+      - name: Terraform validate (aws-serverless-edge bootstrap)
+        working-directory: examples/aws-serverless-edge/bootstrap
+        run: |
+          terraform init -backend=false
+          terraform validate
+      - uses: terraform-linters/setup-tflint@v4
+      - name: Run TFLint
+        run: |
+          tflint --init
+          tflint --chdir=examples/aws-basic
+          tflint --chdir=examples/three-tier-webapp
+          tflint --chdir=examples/eks-production-platform
+          tflint --chdir=examples/aws-serverless-edge

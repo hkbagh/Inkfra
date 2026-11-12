@@ -17,26 +17,31 @@ flowchart LR
 ## Layers
 
 1. **Presentation layer** (`src/components`)
-   - `Toolbar`: project metadata, actions, validation results.
-   - `Sidebar`: searchable, filterable resource library.
-   - `Canvas`: React Flow canvas, drag-and-drop, selection.
-   - `PropertiesPanel`: node/edge property editing.
-   - `ResourceNode`: node rendering.
+   - `Toolbar`: project metadata, provider logo selector, examples modal trigger, validation, live code preview trigger, ZIP/JSON import-export.
+   - `Sidebar`: searchable, filterable resource library with provider vector logos and responsive mobile/tablet drawer.
+   - `Canvas`: React Flow canvas with Move (`V`) / Connect (`C`) modes, bidirectional perimeter & whole-body connectors, Undo/Redo, Duplicate, and tier-based Auto Layout.
+   - `PropertiesPanel`: node/edge property editing, edge handle swap/reconnect, duplication, required-field hints, and responsive mobile drawer.
+   - `ResourceNode`: animated resource cards with provider/brand SVGs and top/right/bottom/left loose handles.
+   - `InfraEdge` & `CustomConnectionLine`: smooth bezier connectors with hover controls, inline kind pills, and directional animated flow.
+   - `ExamplesModal` & `CodePreviewModal`: built-in blueprint loader and multi-file `.tf` / `README.md` live viewer with copy and ZIP export.
+   - `BrandLogos`: custom SVG marks for Inkfra and cloud/platform providers (`src/lib/brandMeta.ts` for curated resource icons).
    - `ErrorBoundary`: crash isolation.
 
 2. **State layer** (`src/store`)
-   - Zustand store holds nodes, edges, selection, project metadata.
-   - Exposes mutations and selectors.
+   - Zustand store holds nodes, edges, selection, project metadata, Move/Connect tool mode, Undo/Redo history stacks, and debounced `localStorage` autosave (`inkfra:autosave:v1`).
+   - Exposes mutations, auto-layout, duplication, handle-preserving connect/reconnect, and selectors.
 
 3. **Domain layer** (`src/types`, `src/data`)
    - `ir.ts`: provider-agnostic intermediate representation.
    - `catalog.ts`: resource definitions and property schemas.
 
-4. **Generation layer** (`src/lib`)
-   - `hcl.ts`: HCL serialization helpers.
-   - `terraform.ts`: provider-aware Terraform generation.
-   - `validate.ts`: diagram validation.
-   - `project.ts`: import parsing.
+4. **Generation & Import layer** (`src/lib`)
+   - `hcl.ts`: HCL serialization and `=` alignment helpers.
+   - `terraform.ts`: multi-cloud IaC generator (modular repo split & single-file modes, implicit AWS/Azure/GCP glue, dynamic data lookups, bootstrap stacks).
+   - `devops.ts`: CI/CD workflow (`.github/workflows/infra.yml`, `.gitlab-ci.yml`, `Jenkinsfile`), Docker Compose, NGINX, Prometheus/Grafana, ArgoCD/K8s YAML, and Ansible emitters.
+   - `tfImport.ts`: Terraform HCL parser importing `.tf` files back into IR nodes & edges.
+   - `validate.ts`: diagram, CIDR, port, parent-hierarchy, and security posture validation.
+   - `project.ts`: JSON IR import parsing.
 
 ## Data flow
 

@@ -110,7 +110,8 @@ Confirm:
 
 - The title is `Inkfra — Visual Infrastructure as Code`.
 - The asset hash in the live `index.html` matches `dist/index.html`.
-- The theme switcher includes Professional and Slack themes.
+- The toolbar includes the Examples, Validate, and Generate .tf actions.
+- The canvas empty state links to the example projects dialog.
 
 ## SPA routing
 

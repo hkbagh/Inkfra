@@ -35,16 +35,20 @@ export function parseProject(input: unknown): Project | null {
       id: e.id,
       source: e.source,
       target: e.target,
+      sourceHandle: typeof e.sourceHandle === 'string' ? e.sourceHandle : undefined,
+      targetHandle: typeof e.targetHandle === 'string' ? e.targetHandle : undefined,
       kind: (typeof e.kind === 'string' ? e.kind : 'connects') as any,
       label: typeof e.label === 'string' ? e.label : undefined,
     })
   }
 
   const provider = typeof p.provider === 'string' ? p.provider : 'aws'
+  const exportLayout = p.exportLayout === 'single' || p.exportLayout === 'modular' ? p.exportLayout : undefined
   return {
     name: p.name,
     description: typeof p.description === 'string' ? p.description : undefined,
     provider: provider as any,
+    ...(exportLayout ? { exportLayout } : {}),
     nodes,
     edges,
     createdAt: typeof p.createdAt === 'string' ? p.createdAt : new Date().toISOString(),

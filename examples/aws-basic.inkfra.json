@@ -1,0 +1,95 @@
+{
+  "name": "AWS Starter Network",
+  "description": "A compact AWS baseline with a VPC, public subnet, internet gateway, security group, EC2 instance, and S3 bucket.",
+  "provider": "aws",
+  "exportLayout": "single",
+  "nodes": [
+    {
+      "id": "vpc",
+      "type": "aws_vpc",
+      "label": "Main VPC",
+      "provider": "aws",
+      "x": 120,
+      "y": 160,
+      "properties": {
+        "cidr_block": "10.0.0.0/16",
+        "name": "starter-vpc",
+        "enable_dns_hostnames": true,
+        "enable_dns_support": true
+      }
+    },
+    {
+      "id": "subnet",
+      "type": "aws_subnet",
+      "label": "Public Subnet",
+      "provider": "aws",
+      "x": 400,
+      "y": 160,
+      "properties": {
+        "cidr_block": "10.0.1.0/24",
+        "availability_zone": "us-east-1a",
+        "map_public_ip_on_launch": true,
+        "name": "public-a"
+      }
+    },
+    {
+      "id": "igw",
+      "type": "aws_internet_gateway",
+      "label": "Internet Gateway",
+      "provider": "aws",
+      "x": 120,
+      "y": 340,
+      "properties": {
+        "name": "starter-igw"
+      }
+    },
+    {
+      "id": "sg",
+      "type": "aws_security_group",
+      "label": "Web Security Group",
+      "provider": "aws",
+      "x": 400,
+      "y": 340,
+      "properties": {
+        "name": "web-sg",
+        "description": "Allow HTTP and SSH"
+      }
+    },
+    {
+      "id": "ec2",
+      "type": "aws_ec2_instance",
+      "label": "Web Server",
+      "provider": "aws",
+      "x": 700,
+      "y": 160,
+      "properties": {
+        "ami": "ami-0c55b159cbfafe1f0",
+        "instance_type": "t3.micro",
+        "name": "web-1"
+      }
+    },
+    {
+      "id": "s3",
+      "type": "aws_s3_bucket",
+      "label": "Assets Bucket",
+      "provider": "aws",
+      "x": 700,
+      "y": 340,
+      "properties": {
+        "bucket": "starter-assets-bucket",
+        "acl": "private",
+        "versioning": true
+      }
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "subnet", "target": "vpc", "kind": "contains" },
+    { "id": "e2", "source": "igw", "target": "vpc", "kind": "contains" },
+    { "id": "e3", "source": "sg", "target": "vpc", "kind": "contains" },
+    { "id": "e4", "source": "ec2", "target": "subnet", "kind": "contains" },
+    { "id": "e5", "source": "ec2", "target": "sg", "kind": "connects" },
+    { "id": "e6", "source": "s3", "target": "vpc", "kind": "connects" }
+  ],
+  "createdAt": "2026-11-12T00:00:00.000Z",
+  "updatedAt": "2026-11-12T00:00:00.000Z"
+}

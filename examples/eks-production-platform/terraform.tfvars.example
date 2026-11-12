@@ -1,0 +1,4 @@
+# Copy to terraform.tfvars or use environments/<env>/terraform.tfvars
+# Supply sensitive variables via TF_VAR_* environment variables.
+environment = "dev"
+aws_region  = "us-east-1"

@@ -1,0 +1,153 @@
+{
+  "name": "Azure AKS Zero-Trust Platform",
+  "description": "Enterprise Azure platform with Resource Group, VNet, AKS node & private data subnets, NSG, SystemAssigned AKS cluster, Premium ACR, Key Vault, Azure SQL with sensitive password, GRS Storage, azurerm backend, and GitHub OIDC.",
+  "provider": "azure",
+  "exportLayout": "modular",
+  "nodes": [
+    {
+      "id": "rg",
+      "type": "azurerm_resource_group",
+      "label": "Prod Resource Group",
+      "provider": "azure",
+      "x": 80,
+      "y": 210,
+      "properties": { "name": "rg-inkfra-prod", "location": "eastus" }
+    },
+    {
+      "id": "vnet",
+      "type": "azurerm_virtual_network",
+      "label": "Hub VNet",
+      "provider": "azure",
+      "x": 360,
+      "y": 90,
+      "properties": { "name": "vnet-aks-prod", "address_space": "10.30.0.0/16", "location": "eastus" }
+    },
+    {
+      "id": "snet_aks",
+      "type": "azurerm_subnet",
+      "label": "AKS Nodes Subnet",
+      "provider": "azure",
+      "x": 650,
+      "y": 50,
+      "properties": { "name": "snet-aks-nodes", "address_prefixes": "10.30.1.0/22" }
+    },
+    {
+      "id": "snet_data",
+      "type": "azurerm_subnet",
+      "label": "Private Data Subnet",
+      "provider": "azure",
+      "x": 650,
+      "y": 170,
+      "properties": { "name": "snet-data-private", "address_prefixes": "10.30.8.0/24" }
+    },
+    {
+      "id": "nsg",
+      "type": "azurerm_network_security_group",
+      "label": "Workload NSG",
+      "provider": "azure",
+      "x": 360,
+      "y": 230,
+      "properties": { "name": "nsg-aks-prod", "location": "eastus" }
+    },
+    {
+      "id": "aks",
+      "type": "azurerm_kubernetes_cluster",
+      "label": "Production AKS",
+      "provider": "azure",
+      "x": 940,
+      "y": 60,
+      "properties": { "name": "aks-prod-cluster", "location": "eastus", "default_node_pool_count": 3 }
+    },
+    {
+      "id": "acr",
+      "type": "azurerm_container_registry",
+      "label": "Container Registry",
+      "provider": "azure",
+      "x": 940,
+      "y": 200,
+      "properties": { "name": "acrinkfraprod", "sku": "Premium", "location": "eastus" }
+    },
+    {
+      "id": "sql",
+      "type": "azurerm_sql_server",
+      "label": "Azure SQL Server",
+      "provider": "azure",
+      "x": 940,
+      "y": 340,
+      "properties": { "name": "sql-inkfra-prod", "administrator_login": "sqladmin", "location": "eastus" }
+    },
+    {
+      "id": "kv",
+      "type": "azurerm_key_vault",
+      "label": "Secrets Key Vault",
+      "provider": "azure",
+      "x": 650,
+      "y": 320,
+      "properties": { "name": "kv-inkfra-prod", "location": "eastus", "tenant_id": "" }
+    },
+    {
+      "id": "storage",
+      "type": "azurerm_storage_account",
+      "label": "Audit Storage",
+      "provider": "azure",
+      "x": 360,
+      "y": 360,
+      "properties": {
+        "name": "stinkfraproddata",
+        "account_tier": "Standard",
+        "account_replication_type": "GRS",
+        "location": "eastus"
+      }
+    },
+    {
+      "id": "backend",
+      "type": "tf_backend",
+      "label": "AzureRM State",
+      "provider": "terraform",
+      "x": 80,
+      "y": 370,
+      "properties": {
+        "type": "azurerm",
+        "bucket": "tfstate",
+        "key": "aks-enterprise.terraform.tfstate",
+        "region": "eastus",
+        "encrypt": true,
+        "use_lockfile": true
+      }
+    },
+    {
+      "id": "gha",
+      "type": "devops_github_actions",
+      "label": "GitHub Actions OIDC",
+      "provider": "devops",
+      "x": 650,
+      "y": 450,
+      "properties": {
+        "workflow": ".github/workflows/infra.yml",
+        "deploy_branch": "main",
+        "provider_auth": "oidc"
+      }
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "vnet", "target": "rg", "kind": "contains" },
+    { "id": "e2", "source": "snet_aks", "target": "vnet", "kind": "contains" },
+    { "id": "e3", "source": "snet_aks", "target": "rg", "kind": "contains" },
+    { "id": "e4", "source": "snet_data", "target": "vnet", "kind": "contains" },
+    { "id": "e5", "source": "snet_data", "target": "rg", "kind": "contains" },
+    { "id": "e6", "source": "nsg", "target": "rg", "kind": "contains" },
+    { "id": "e7", "source": "aks", "target": "rg", "kind": "contains" },
+    { "id": "e8", "source": "aks", "target": "snet_aks", "kind": "connects" },
+    { "id": "e9", "source": "acr", "target": "rg", "kind": "contains" },
+    { "id": "e10", "source": "sql", "target": "rg", "kind": "contains" },
+    { "id": "e11", "source": "kv", "target": "rg", "kind": "contains" },
+    { "id": "e12", "source": "storage", "target": "rg", "kind": "contains" },
+    { "id": "e13", "source": "aks", "target": "acr", "kind": "connects" },
+    { "id": "e14", "source": "aks", "target": "kv", "kind": "connects" },
+    { "id": "e15", "source": "aks", "target": "sql", "kind": "connects" },
+    { "id": "e16", "source": "gha", "target": "backend", "kind": "depends_on" }
+  ],
+  "createdAt": "2026-11-12T00:00:00.000Z",
+  "updatedAt": "2026-11-12T00:00:00.000Z"
+}
+

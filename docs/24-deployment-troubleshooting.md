@@ -219,7 +219,7 @@ gh workflow run ci.yml --ref main
 1. Check the latest build in **Cloudflare -> Workers & Pages -> inkfra -> Deployments**.
 2. Open <https://inkfra.bagh.co.in>.
 3. Confirm the page title is `Inkfra — Visual Infrastructure as Code`.
-4. Confirm the theme switcher is present in the toolbar.
+4. Confirm the Examples button is present in the toolbar and opens the example projects dialog.
 
 You can also inspect the deployed HTML:
 
