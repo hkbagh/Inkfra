@@ -126,6 +126,15 @@ No access to the specified service.
 
 This is a token scope problem, not a deployment problem. The token is valid and may be able to list Workers, but its **Workers Scripts** permission is restricted to specific Workers and does not include `inkfra`. Wrangler needs access to the individual service to deploy it.
 
+The preflight log shows the telltale pair:
+
+```text
+Workers access: {"success":true,"errors":[],"scripts":0}
+Worker service access: {"success":false,"errors":[{"message":"No access to the specified service."}]}
+```
+
+`scripts: 0` means the token's Workers Scripts resource scope is empty or excludes `inkfra`, even though the token itself is active.
+
 ### Fix
 
 1. Open **Cloudflare Dashboard -> My Profile -> API Tokens**.
