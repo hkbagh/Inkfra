@@ -2,9 +2,6 @@ name: Desktop Build (Node SEA)
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - 'v*'
 
 permissions:
   contents: read
@@ -13,7 +10,11 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        include:
+          - os: windows-latest
+            archive: inkfra-windows.zip
+          - os: ubuntu-latest
+            archive: inkfra-linux.zip
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7
@@ -23,7 +24,17 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run package:sea
+      - name: Package Windows archive
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: Compress-Archive -Path release/inkfra.exe, release/dist -DestinationPath release/inkfra-windows.zip
+      - name: Package Linux archive
+        if: runner.os == 'Linux'
+        run: |
+          cd release
+          zip -r inkfra-linux.zip inkfra dist
       - uses: actions/upload-artifact@v7
         with:
           name: inkfra-${{ matrix.os }}
-          path: release/inkfra*
+          path: release/${{ matrix.archive }}
+          if-no-files-found: error

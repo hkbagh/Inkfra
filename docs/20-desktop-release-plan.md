@@ -2,11 +2,23 @@
 
 This plan describes how to package Inkfra as native desktop executables for Windows and Linux while reusing the existing web stack.
 
+## Current implementation
+
+Inkfra currently ships Node SEA executables. `npm run package:sea` builds the web app, injects the SEA blob into a copy of Node, and copies `dist/` next to the binary.
+
+- `Release Desktop` (`.github/workflows/release-desktop.yml`) runs on `v*` tags, builds Windows and Linux bundles, and attaches `inkfra-windows.zip` and `inkfra-linux.zip` to the GitHub Release. Tags containing `-alpha` are published as prereleases.
+- `Desktop Build (Node SEA)` (`.github/workflows/desktop.yml`) is a manual workflow for verification. It uploads the same zipped bundles as workflow artifacts.
+
+Each archive contains the executable and the `dist/` directory. Keep them together; the executable serves `dist/` from its own directory.
+
+The Changesets release workflow creates the version tag. GitHub does not trigger workflows from tag pushes made with the repository `GITHUB_TOKEN`. To publish desktop assets automatically, create a fine-grained personal access token with **Contents: Read and write** and **Pull requests: Read and write**, and store it as the `RELEASE_TOKEN` repository secret. The release workflow uses it when present and falls back to `GITHUB_TOKEN` otherwise.
+
 ## Option A — Tauri (recommended)
 
 **Why:** Small bundle size, native webview, Rust backend, built-in updater, cross-platform installers.
 
 ### Prerequisites
+
 - Rust toolchain (`rustup`)
 - Tauri CLI (`cargo install tauri-cli` or `npm i -D @tauri-apps/cli`)
 - Platform build tools:
@@ -14,6 +26,7 @@ This plan describes how to package Inkfra as native desktop executables for Wind
   - Linux: `libwebkit2gtk-4.1-dev`, `libappindicator3-dev`, `librsvg2-dev`, `patchelf`
 
 ### Steps
+
 1. Initialize Tauri in the project:
    ```bash
    npm i -D @tauri-apps/cli
@@ -34,6 +47,7 @@ This plan describes how to package Inkfra as native desktop executables for Wind
    - Linux: `.AppImage`, `.deb`, `.rpm`
 
 ### CI matrix
+
 - Use `tauri-apps/tauri-action` on `windows-latest` and `ubuntu-latest`.
 - Sign Windows binaries with a code-signing certificate.
 - Publish artifacts to GitHub Releases.
@@ -43,6 +57,7 @@ This plan describes how to package Inkfra as native desktop executables for Wind
 **Why:** Mature ecosystem, Node APIs available, easier for teams already using Node.
 
 ### Steps
+
 1. Install Electron and builder:
    ```bash
    npm i -D electron electron-builder
@@ -55,6 +70,7 @@ This plan describes how to package Inkfra as native desktop executables for Wind
    ```
 
 ### Trade-offs
+
 - Larger bundle size (~100MB+).
 - Higher memory usage.
 
@@ -63,6 +79,7 @@ This plan describes how to package Inkfra as native desktop executables for Wind
 **Why:** No native toolchain beyond Node; smallest conceptual change.
 
 ### Steps
+
 1. Create `scripts/serve.mjs` that serves `dist/` on a local port and opens the default browser.
 2. Use Node 24 Single Executable Application (SEA) support:
    ```bash
@@ -74,6 +91,7 @@ This plan describes how to package Inkfra as native desktop executables for Wind
    - Linux: `node` → `inkfra`
 
 ### Trade-offs
+
 - Requires shipping a Node binary (~50MB).
 - Less native feel than Tauri/Electron.
 
