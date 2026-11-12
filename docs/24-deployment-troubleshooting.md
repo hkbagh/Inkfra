@@ -49,6 +49,27 @@ If selecting a new token does not clear the error, reinstall the GitHub integrat
 
 See Cloudflare's [GitHub integration guide](https://developers.cloudflare.com/workers/ci-cd/builds/git-integration/github-integration/#reinstall-the-cloudflare-github-app) for the full flow.
 
+### Symptom: project is disconnected from your Git account
+
+Cloudflare shows this banner under **Settings -> Build**:
+
+```text
+This project is disconnected from your Git account. This may cause deployments to fail.
+```
+
+The Worker still lists `hkbagh/Inkfra`, but Cloudflare no longer has an authorized GitHub installation that can read the repository. Builds fail before they reach the build token check.
+
+### Fix
+
+1. Open **Cloudflare Dashboard -> Workers & Pages -> inkfra -> Settings -> Build**.
+2. Next to **Git repository**, select **Manage**.
+3. Reconnect the GitHub account and grant access to `hkbagh/Inkfra`.
+4. If **Manage** does not offer a reconnect, select **Disconnect**, then reconnect the repository with **Connect to Git**.
+5. If the GitHub app is missing or revoked, open <https://github.com/settings/installations>, select **Configure** next to **Cloudflare Workers and Pages**, and grant access to the repository. Reinstall the app if it is not listed.
+6. Save the configuration and retry the failed build from **Deployments -> View Build History**.
+
+The disconnected-account banner must be gone before a Workers Builds deployment can succeed. This is separate from the build API token, so replacing the token alone does not fix it.
+
 ### Symptom: Worker name mismatch
 
 ```text
@@ -80,6 +101,7 @@ Check the failed step annotations in **Actions -> Deploy to Cloudflare Workers**
 - The token is invalid or expired.
 - `CLOUDFLARE_ACCOUNT_ID` is missing or wrong.
 - The token cannot access the selected account.
+- The token can list Workers but cannot access the `inkfra` Worker service.
 
 To test the same credentials locally:
 
@@ -91,9 +113,29 @@ npx wrangler whoami
 npx wrangler deploy
 ```
 
-`verify:cloudflare` checks the token with Cloudflare's `/user/tokens/verify` endpoint and confirms the token can list Workers scripts in the account. It never prints the token or account ID in full.
+`verify:cloudflare` checks the token with Cloudflare's `/user/tokens/verify` endpoint, confirms the token can list Workers scripts in the account, and confirms it can access the `inkfra` Worker service from `wrangler.toml`. It never prints the token or account ID in full.
 
 Do not commit the token. Do not paste it into an issue or chat.
+
+### Symptom: No access to the specified service
+
+```text
+A request to the Cloudflare API (/accounts/<account-id>/workers/services/inkfra) failed.
+No access to the specified service.
+```
+
+This is a token scope problem, not a deployment problem. The token is valid and may be able to list Workers, but its **Workers Scripts** permission is restricted to specific Workers and does not include `inkfra`. Wrangler needs access to the individual service to deploy it.
+
+### Fix
+
+1. Open **Cloudflare Dashboard -> My Profile -> API Tokens**.
+2. Edit the token used by the `CLOUDFLARE_API_TOKEN` repository secret.
+3. Under **Permissions**, set **Account -> Workers Scripts -> Edit**.
+4. Under **Resources**, choose **All Workers**, or add `inkfra` to the selected Workers.
+5. Save the token. Updating permissions does not change the token value, so the existing secret remains valid.
+6. Run `npm run verify:cloudflare` locally, then rerun the workflow.
+
+If the token was created from the Workers Builds screen, it may be a build token rather than a deploy token. Create a separate user API token with the permissions above and update the GitHub secret.
 
 ### Required repository secrets
 

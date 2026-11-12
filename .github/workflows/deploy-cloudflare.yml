@@ -55,6 +55,22 @@ jobs:
             exit 1
           fi
 
+          worker_name=$(sed -n 's/^name[[:space:]]*=[[:space:]]*"\(.*\)"/\1/p' wrangler.toml | head -n 1)
+          if [ -z "$worker_name" ]; then
+            echo "::error::Could not read the Worker name from wrangler.toml."
+            exit 1
+          fi
+          echo "Worker name: $worker_name"
+
+          service_response=$(curl -sS --fail-with-body \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/services/$worker_name" || true)
+          echo "Worker service access: $(echo "$service_response" | jq -c '{success, errors}')"
+          if ! echo "$service_response" | jq -e '.success == true' > /dev/null; then
+            echo "::error::The token cannot access the '$worker_name' Worker service. Edit the token's Workers Scripts permission and set its resources to All Workers, or include '$worker_name'."
+            exit 1
+          fi
+
       - name: Verify Wrangler authentication
         continue-on-error: true
         run: npx wrangler whoami 2>&1 | tee wrangler-whoami.log

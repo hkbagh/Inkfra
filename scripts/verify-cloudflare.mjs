@@ -1,5 +1,15 @@
+import { readFileSync } from 'node:fs'
+
 const token = process.env.CLOUDFLARE_API_TOKEN
 const accountId = process.env.CLOUDFLARE_ACCOUNT_ID
+
+let workerName
+try {
+  const wranglerToml = readFileSync(new URL('../wrangler.toml', import.meta.url), 'utf8')
+  workerName = wranglerToml.match(/^\s*name\s*=\s*"([^"]+)"/m)?.[1]
+} catch {
+  workerName = undefined
+}
 
 function fail(message) {
   console.error(`\n✖ ${message}\n`)
@@ -34,8 +44,13 @@ if (!accountId) {
   fail('CLOUDFLARE_ACCOUNT_ID is not set. Find it in Cloudflare → Workers & Pages → Account ID.')
 }
 
+if (!workerName) {
+  fail('Could not read the Worker name from wrangler.toml.')
+}
+
 console.log(`Token:     ${mask(token)}`)
 console.log(`Account:   ${mask(accountId)}`)
+console.log(`Worker:    ${workerName}`)
 
 const verify = await cloudflare('/user/tokens/verify')
 if (!verify.body.success) {
@@ -51,4 +66,15 @@ if (!workers.body.success) {
 }
 
 console.log(`Workers:   ${workers.body.result?.length ?? 0} script(s) visible`)
+
+const service = await cloudflare(`/accounts/${accountId}/workers/services/${workerName}`)
+if (!service.body.success) {
+  const errors = JSON.stringify(service.body.errors ?? [])
+  fail(
+    `The token cannot access the '${workerName}' Worker service (HTTP ${service.response.status}): ${errors}\n` +
+      `Edit the token's Workers Scripts permission and set its resources to All Workers, or include '${workerName}'.`,
+  )
+}
+
+console.log(`Service:   ${workerName} is accessible`)
 console.log('\n✔ Cloudflare credentials are valid for Workers deploys.\n')
