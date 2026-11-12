@@ -131,7 +131,7 @@ Use the pull request template checklist: lint, build, tests, documentation, and 
 gh pr checks --watch
 ```
 
-Or open the PR's **Checks** tab. The required job is `CI / build`. CI runs on the PR and again after merge to `main`.
+Or open the PR's **Checks** tab. The CI check is `CI / build`. CI runs on the PR and again after merge to `main`.
 
 ### 6. Merge the PR
 

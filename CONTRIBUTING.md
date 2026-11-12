@@ -81,7 +81,7 @@ Repeat for `examples/three-tier-webapp`.
    gh pr checks --watch
    ```
 
-   The required job is `CI / build`. It runs lint, build, tests, Terraform formatting, and Terraform validation.
+   The CI check is `CI / build`. It runs lint, build, tests, Terraform formatting, and Terraform validation.
 
 6. Merge the pull request:
 
