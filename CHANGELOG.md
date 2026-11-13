@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0-alpha.3
+
+### Patch Changes
+
+- afbdb17: Document CI/CD operations, including repository secrets, pull request and changeset steps, manual CI and deploy dispatch, alpha and stable release flows, desktop builds, and workflow recovery commands.
+- 5ff9029: Polish the canvas UI with a refreshed theme, an example projects dialog, clearer empty states, and improved toolbar, sidebar, node, and properties layouts. Remove the Slack theme.
+
 ## 0.2.0-alpha.2
 
 ### Patch Changes
